@@ -8,6 +8,7 @@ import (
 type Cube struct {
 	Faces    map[string]Face
 	CubeSize int
+	moves    map[string](func() *Cube)
 }
 
 func NewCube(cubeSize int) *Cube {
@@ -16,6 +17,84 @@ func NewCube(cubeSize int) *Cube {
 		CubeSize: cubeSize,
 	}
 
+	// Creating moves funcs map
+	// So that we can make a call like:
+	// c.moves["R'"]()
+	c.moves = make(map[string](func() *Cube))
+	// Common moves
+	c.moves["R"] = c.R
+	c.moves["L"] = c.L
+	c.moves["F"] = c.F
+	c.moves["B"] = c.B
+	c.moves["D"] = c.D
+	c.moves["U"] = c.U
+	c.moves["M"] = c.M
+	c.moves["S"] = c.S
+	c.moves["E"] = c.E
+
+	// Reverse moves
+	c.moves["R'"] = c.Rp
+	c.moves["L'"] = c.Lp
+	c.moves["F'"] = c.Fp
+	c.moves["B'"] = c.Bp
+	c.moves["D'"] = c.Dp
+	c.moves["U'"] = c.Up
+	c.moves["M'"] = c.Mp
+	c.moves["S'"] = c.Sp
+	c.moves["E'"] = c.Ep
+
+	// Double moves
+	c.moves["R2"] = c.R2
+	c.moves["L2"] = c.L2
+	c.moves["F2"] = c.F2
+	c.moves["B2"] = c.B2
+	c.moves["D2"] = c.D2
+	c.moves["U2"] = c.U2
+	c.moves["M2"] = c.M2
+	c.moves["S2"] = c.S2
+	c.moves["E2"] = c.E2
+
+	// Rotation moves
+	c.moves["x"] = c.X
+	c.moves["y"] = c.Y
+	c.moves["z"] = c.Z
+	c.moves["x'"] = c.Xp
+	c.moves["y'"] = c.Yp
+	c.moves["z'"] = c.Zp
+	c.moves["x2"] = c.X2
+	c.moves["y2"] = c.Y2
+	c.moves["z2"] = c.Z2
+
+	// Wide moves
+	c.moves["r"] = c.Rw
+	c.moves["r'"] = c.Rwp
+	c.moves["r2"] = c.Rw2
+	c.moves["l"] = c.Lw
+	c.moves["l'"] = c.Lwp
+	c.moves["l2"] = c.Lw2
+	c.moves["d"] = c.Dw
+	c.moves["d'"] = c.Dwp
+	c.moves["d2"] = c.Dw2
+	c.moves["u"] = c.Uw
+	c.moves["u'"] = c.Uwp
+	c.moves["u2"] = c.Uw2
+	c.moves["b"] = c.Bw
+	c.moves["b'"] = c.Bwp
+	c.moves["b2"] = c.Bw2
+	c.moves["f"] = c.Fw
+	c.moves["f'"] = c.Fwp
+	c.moves["f2"] = c.Fw2
+	c.moves["m"] = c.Mw
+	c.moves["m'"] = c.Mwp
+	c.moves["m2"] = c.Mw2
+	c.moves["s"] = c.Sw
+	c.moves["s'"] = c.Swp
+	c.moves["s2"] = c.Sw2
+	c.moves["e"] = c.Ew
+	c.moves["e'"] = c.Ewp
+	c.moves["e2"] = c.Ew2
+
+	// Creating faces
 	for k, color := range Colors {
 		c.Faces[k] = *NewFace(cubeSize, color)
 	}
@@ -241,6 +320,241 @@ func (c *Cube) Bp() *Cube {
 	c.Faces["yellow"].ReplaceRow(redCopy.RotateClockwise(), index)
 	c.Faces["red"].ReplaceCol(whiteCopy.RotateClockwise(), index)
 	c.Faces["blue"].RotateAntiClockwise()
+
+	return c
+}
+
+func (c *Cube) M() *Cube {
+	mid := int(c.CubeSize / 2)
+	blueCopy := *(c.Faces["blue"].Copy())
+	yellowCopy := *(c.Faces["yellow"].Copy())
+	whiteCopy := *(c.Faces["white"].Copy())
+	c.Faces["white"].ReplaceCol(blueCopy.RotateClockwise().RotateClockwise(), mid)
+	c.Faces["blue"].ReplaceCol(yellowCopy.RotateClockwise().RotateClockwise(), mid)
+	c.Faces["yellow"].ReplaceCol(c.Faces["green"], mid)
+	c.Faces["green"].ReplaceCol(whiteCopy, mid)
+
+	return c
+}
+
+func (c *Cube) Mp() *Cube {
+	return c.M().M().M()
+}
+
+func (c *Cube) M2() *Cube {
+	return c.M().M()
+}
+
+func (c *Cube) S() *Cube {
+	mid := int(c.CubeSize / 2)
+	whiteCopy := *(c.Faces["white"].Copy())
+	orangeCopy := *(c.Faces["orange"].Copy())
+	yellowCopy := *(c.Faces["yellow"].Copy())
+	redCopy := *(c.Faces["red"].Copy())
+	c.Faces["white"].ReplaceRow(orangeCopy.RotateClockwise(), mid)
+	c.Faces["orange"].ReplaceCol(yellowCopy.RotateClockwise(), mid)
+	c.Faces["yellow"].ReplaceRow(redCopy.RotateClockwise(), mid)
+	c.Faces["red"].ReplaceCol(whiteCopy.RotateClockwise(), mid)
+
+	return c
+}
+
+func (c *Cube) Sp() *Cube {
+	return c.S().S().S()
+}
+
+func (c *Cube) S2() *Cube {
+	return c.S().S()
+}
+
+func (c *Cube) E() *Cube {
+	return c.Z().M().Zp()
+}
+
+func (c *Cube) Ep() *Cube {
+	return c.E().E().E()
+}
+
+func (c *Cube) E2() *Cube {
+	return c.E().E()
+}
+
+func (c *Cube) X() *Cube {
+	whiteCopy := *(c.Faces["white"].Copy())
+
+	c.Faces["white"] = c.Faces["green"]
+	c.Faces["green"] = c.Faces["yellow"]
+	c.Faces["orange"].RotateAntiClockwise()
+	c.Faces["red"].RotateClockwise()
+	c.Faces["yellow"] = c.Faces["blue"].Flip()
+	c.Faces["blue"] = whiteCopy.Flip()
+
+	return c
+}
+
+func (c *Cube) Y() *Cube {
+	copyGreen := *(c.Faces["green"].Copy())
+
+	c.Faces["white"].RotateClockwise()
+	c.Faces["yellow"].RotateAntiClockwise()
+	c.Faces["green"] = c.Faces["red"]
+	c.Faces["red"] = c.Faces["blue"]
+	c.Faces["blue"] = c.Faces["orange"]
+	c.Faces["orange"] = copyGreen
+
+	return c
+}
+
+func (c *Cube) Z() *Cube {
+	whiteCopy := *(c.Faces["white"].Copy())
+	c.Faces["white"] = c.Faces["orange"].RotateClockwise()
+	c.Faces["orange"] = c.Faces["yellow"].RotateClockwise()
+	c.Faces["yellow"] = c.Faces["red"].RotateClockwise()
+	c.Faces["red"] = whiteCopy.RotateClockwise()
+	c.Faces["green"].RotateClockwise()
+	c.Faces["blue"].RotateAntiClockwise()
+
+	return c
+}
+
+func (c *Cube) Xp() *Cube {
+	return c.X().X().X()
+}
+
+func (c *Cube) Yp() *Cube {
+	return c.Y().Y().Y()
+}
+
+func (c *Cube) Zp() *Cube {
+	return c.Z().Z().Z()
+}
+
+func (c *Cube) X2() *Cube {
+	return c.X().X()
+}
+
+func (c *Cube) Y2() *Cube {
+	return c.Y().Y()
+}
+
+func (c *Cube) Z2() *Cube {
+	return c.Z().Z()
+}
+
+func (c *Cube) Rw() *Cube {
+	return c.R().Mp()
+}
+
+func (c *Cube) Rwp() *Cube {
+	return c.Rp().M()
+}
+
+func (c *Cube) Rw2() *Cube {
+	return c.Rw().Rw()
+}
+
+func (c *Cube) Lw() *Cube {
+	return c.L().M()
+}
+
+func (c *Cube) Lwp() *Cube {
+	return c.Lp().Mp()
+}
+
+func (c *Cube) Lw2() *Cube {
+	return c.Lw().Lw()
+}
+
+func (c *Cube) Uw() *Cube {
+	return c.U().Ep()
+}
+
+func (c *Cube) Uwp() *Cube {
+	return c.Up().E()
+}
+
+func (c *Cube) Uw2() *Cube {
+	return c.Uw().Uw()
+}
+
+func (c *Cube) Dw() *Cube {
+	return c.D().E()
+}
+
+func (c *Cube) Dwp() *Cube {
+	return c.Dp().Ep()
+}
+
+func (c *Cube) Dw2() *Cube {
+	return c.Dw().Dw()
+}
+
+func (c *Cube) Fw() *Cube {
+	return c.F().S()
+}
+
+func (c *Cube) Fwp() *Cube {
+	return c.Fp().Sp()
+}
+
+func (c *Cube) Fw2() *Cube {
+	return c.Fw().Fw()
+}
+
+func (c *Cube) Bw() *Cube {
+	return c.B().Sp()
+}
+
+func (c *Cube) Bwp() *Cube {
+	return c.Bp().S()
+}
+
+func (c *Cube) Bw2() *Cube {
+	return c.Bw().Bw()
+}
+
+func (c *Cube) Mw() *Cube {
+	return c.L().Rp()
+}
+
+func (c *Cube) Mwp() *Cube {
+	return c.Lp().R()
+}
+
+func (c *Cube) Mw2() *Cube {
+	return c.Mw().Mw()
+}
+
+func (c *Cube) Sw() *Cube {
+	return c.F().Bp()
+}
+
+func (c *Cube) Swp() *Cube {
+	return c.Fp().B()
+}
+
+func (c *Cube) Sw2() *Cube {
+	return c.Sw().Sw()
+}
+
+func (c *Cube) Ew() *Cube {
+	return c.Up().D()
+}
+
+func (c *Cube) Ewp() *Cube {
+	return c.U().Dp()
+}
+
+func (c *Cube) Ew2() *Cube {
+	return c.Ew().Ew()
+}
+
+func (c *Cube) Execute(alg Alg) *Cube {
+	for _, m := range alg.Moves {
+		// Getting and calling corresponding func
+		// From funcs map
+		c.moves[m]()
+	}
 
 	return c
 }
