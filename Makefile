@@ -6,6 +6,9 @@ all: build
 fmt:
 	go fmt ./...
 
+deps:
+	glide install
+
 build $(BIN)/$(BIN_NAME): $(BIN)
 	env CGO_ENABLED=0 go build -o $(BIN)/$(BIN_NAME)
 
@@ -22,4 +25,4 @@ test:
 $(BIN):
 	mkdir -p $(BIN)
 
-.PHONY: fmt install clean test all release
+.PHONY: fmt install clean test all release deps

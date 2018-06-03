@@ -1,0 +1,4 @@
+package: github.com/nmaupu/gocube
+import:
+- package: github.com/jawher/mow.cli
+  version: ^1.0.4

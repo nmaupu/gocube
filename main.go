@@ -1,12 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"github.com/nmaupu/gocube/data"
+	"github.com/nmaupu/gocube/cli"
+)
+
+const (
+	AppName = "gocube"
+	AppDesc = "Rubik's cube utilities written in Go"
+)
+
+var (
+	AppVersion string
 )
 
 func main() {
-	fmt.Println("In development")
-	c := data.NewCube(3)
-	fmt.Println(c.String())
+	if AppVersion == "" {
+		AppVersion = "master"
+	}
+
+	cli.Process(AppName, AppDesc, AppVersion)
 }

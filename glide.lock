@@ -1,0 +1,14 @@
+hash: 57bee83b5e4d8f1331b68e8d89f9b596500552678171ff1228633095d60de094
+updated: 2018-06-03T13:41:05.665105+02:00
+imports:
+- name: github.com/jawher/mow.cli
+  version: 2f22195f169da29d54624afd9eb83ada5c9e4ee9
+  subpackages:
+  - internal/container
+  - internal/flow
+  - internal/fsm
+  - internal/lexer
+  - internal/matcher
+  - internal/parser
+  - internal/values
+testImports: []
