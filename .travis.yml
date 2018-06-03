@@ -20,8 +20,10 @@ script:
 
 before_deploy:
 - mkdir -p bin_release
-- GOOS=linux  GOARCH=amd64 go build -o bin_release/gocube_linux-amd64  -ldflags="-X main.AppVersion=$TRAVIS_TAG"
-- GOOS=darwin GOARCH=amd64 go build -o bin_release/gocube_darwin-amd64 -ldflags="-X main.AppVersion=$TRAVIS_TAG"
+- GOOS=linux   GOARCH=amd64 go build -o bin_release/gocube_linux-amd64   -ldflags="-X main.AppVersion=$TRAVIS_TAG"
+- GOOS=darwin  GOARCH=amd64 go build -o bin_release/gocube_darwin-amd64  -ldflags="-X main.AppVersion=$TRAVIS_TAG"
+- GOOS=windows GOARCH=386   go build -o bin_release/gocube_win-i386.exe  -ldflags="-X main.AppVersion=$TRAVIS_TAG"
+- GOOS=windows GOARCH=amd64 go build -o bin_release/gocube_win-amd64.exe -ldflags="-X main.AppVersion=$TRAVIS_TAG"
 
 deploy:
   provider: releases
