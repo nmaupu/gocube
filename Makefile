@@ -20,7 +20,7 @@ clean:
 	rm -rf $(BIN)
 
 test:
-	go test -v ./...
+	go test $(go list ./... | grep -v /vendor/)
 
 $(BIN):
 	mkdir -p $(BIN)
