@@ -549,7 +549,7 @@ func (c *Cube) Ew2() *Cube {
 	return c.Ew().Ew()
 }
 
-func (c *Cube) Execute(alg Alg) *Cube {
+func (c *Cube) Execute(alg *Alg) *Cube {
 	for _, m := range alg.Moves {
 		// Getting and calling corresponding func
 		// From funcs map

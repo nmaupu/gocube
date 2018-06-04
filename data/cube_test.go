@@ -1025,7 +1025,7 @@ func ExampleCubeExecute() {
 
 	a := NewAlg("U2 F2 R' B2 D2 B2 R' F2 U2 R2 D F' D' B F' R' D' U2 F' L2")
 
-	fmt.Println(c.Execute(*a))
+	fmt.Println(c.Execute(a))
 	// Output:
 	//      |R G Y|
 	//      |W W Y|
