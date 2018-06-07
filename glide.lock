@@ -1,6 +1,13 @@
-hash: 57bee83b5e4d8f1331b68e8d89f9b596500552678171ff1228633095d60de094
-updated: 2018-06-03T13:41:05.665105+02:00
+hash: dcfcf29fd8b418032b0cf47ab6547a52b69b5ab260ca0672f64701c2b2d57c3c
+updated: 2018-06-08T01:07:50.67591+02:00
 imports:
+- name: github.com/fogleman/gg
+  version: 6166aa3c1afaee416f384645a81636267aee6d25
+- name: github.com/golang/freetype
+  version: e2365dfdc4a05e4b8299a783240d4a7d5a65d4e4
+  subpackages:
+  - raster
+  - truetype
 - name: github.com/jawher/mow.cli
   version: 2f22195f169da29d54624afd9eb83ada5c9e4ee9
   subpackages:
@@ -11,4 +18,11 @@ imports:
   - internal/matcher
   - internal/parser
   - internal/values
+- name: golang.org/x/image
+  version: af66defab954cb421ca110193eed9477c8541e2a
+  subpackages:
+  - font
+  - font/basicfont
+  - font/gofont/goregular
+  - math/fixed
 testImports: []

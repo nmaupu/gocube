@@ -90,9 +90,15 @@ func TestReverseMove(t *testing.T) {
 	}
 }
 
-func ExampleAlgReverse() {
+func TestReverse(t *testing.T) {
 	a := NewAlg("R U R' U' R2")
-	fmt.Println(a.Reverse())
-	// Output:
-	// R2 U R U' R'
+	r := a.Copy().Reverse()
+
+	if len(a.Moves) != len(r.Moves) {
+		t.Errorf("Incorrect reverse, lengths differ. Expected: %d, got: %d", len(a.Moves), len(r.Moves))
+	}
+
+	if r.String() != "R2 U R U' R'" {
+		t.Errorf("Incorrect reverse, expected: R2 U R U' R', got: %s", r)
+	}
 }

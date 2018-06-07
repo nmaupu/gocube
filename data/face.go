@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/fogleman/gg"
 )
 
 // Faces are corresponding to the following diagram
@@ -73,6 +74,43 @@ func (f Face) StringRow(n int) string {
 	}
 
 	return buf.String()
+}
+
+func (f Face) Draw(ctx *gg.Context, x, y, cubieSize float64) {
+	cubeSize := len(f.Colors)
+	for i := 0; i < cubeSize; i++ {
+		for j := 0; j < cubeSize; j++ {
+			f.Colors[i][j].Draw(
+				ctx,
+				x+float64(j)*cubieSize,
+				y+float64(i)*cubieSize,
+				cubieSize)
+		}
+	}
+}
+
+// Draw one row only
+func (f Face) DrawRow(ctx *gg.Context, row int, x, y, cubieSize float64) {
+	cubeSize := len(f.Colors)
+	for j := 0; j < cubeSize; j++ {
+		f.Colors[row][j].DrawHalfH(
+			ctx,
+			x+float64(j)*cubieSize,
+			y,
+			cubieSize)
+	}
+}
+
+// Draw one row only in column
+func (f Face) DrawRowCol(ctx *gg.Context, row int, x, y, cubieSize float64) {
+	cubeSize := len(f.Colors)
+	for j := 0; j < cubeSize; j++ {
+		f.Colors[row][j].DrawHalfV(
+			ctx,
+			x,
+			y+float64(j)*cubieSize,
+			cubieSize)
+	}
 }
 
 func (f Face) Copy() *Face {
@@ -150,6 +188,7 @@ func (f Face) RotateClockwise() Face {
 }
 
 func (f Face) RotateAntiClockwise() Face {
+	// Make 3 times RotateClockwise
 	for i := 0; i < 3; i++ {
 		f.RotateClockwise()
 	}

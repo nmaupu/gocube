@@ -68,7 +68,7 @@ func ReverseMove(m string) string {
 
 func (a *Alg) Reverse() *Alg {
 	copy := a.Copy()
-	a.Moves = make([]string, len(copy.Moves))
+	a.Moves = make([]string, 0, len(copy.Moves))
 	for _, m := range copy.Moves {
 		// Prepend to result slice
 		a.Moves = append([]string{ReverseMove(m)}, a.Moves...)

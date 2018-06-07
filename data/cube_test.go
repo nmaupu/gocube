@@ -26,7 +26,7 @@ import (
 //      |Y Y Y|
 
 func ExampleCubeString3() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c)
 	SetDebug(true)
@@ -54,7 +54,7 @@ func ExampleCubeString3() {
 }
 
 func ExampleCubeString4() {
-	c := NewCube(4)
+	c := NewCube(4, 0)
 	SetDebug(false)
 	fmt.Println(c)
 	SetDebug(true)
@@ -88,7 +88,7 @@ func ExampleCubeString4() {
 }
 
 func ExampleCubeR() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.R())
 	// Output:
@@ -104,7 +104,7 @@ func ExampleCubeR() {
 }
 
 func ExampleCubeRp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Rp())
 	// Output:
@@ -120,7 +120,7 @@ func ExampleCubeRp() {
 }
 
 func ExampleCubeL() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.L())
 	// Output:
@@ -136,7 +136,7 @@ func ExampleCubeL() {
 }
 
 func ExampleCubeLp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Lp())
 	// Output:
@@ -152,7 +152,7 @@ func ExampleCubeLp() {
 }
 
 func ExampleCubeD() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.D())
 	// Output:
@@ -168,7 +168,7 @@ func ExampleCubeD() {
 }
 
 func ExampleCubeDp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Dp())
 	// Output:
@@ -184,7 +184,7 @@ func ExampleCubeDp() {
 }
 
 func ExampleCubeU() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.U())
 	// Output:
@@ -200,7 +200,7 @@ func ExampleCubeU() {
 }
 
 func ExampleCubeUp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Up())
 	// Output:
@@ -216,7 +216,7 @@ func ExampleCubeUp() {
 }
 
 func ExampleCubeF() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.F())
 	// Output:
@@ -232,7 +232,7 @@ func ExampleCubeF() {
 }
 
 func ExampleCubeFp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Fp())
 	// Output:
@@ -248,7 +248,7 @@ func ExampleCubeFp() {
 }
 
 func ExampleCubeB() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.B())
 	// Output:
@@ -264,7 +264,7 @@ func ExampleCubeB() {
 }
 
 func ExampleCubeBp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Bp())
 	// Output:
@@ -280,7 +280,7 @@ func ExampleCubeBp() {
 }
 
 func ExampleCubeM() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.M())
 	// Output:
@@ -296,7 +296,7 @@ func ExampleCubeM() {
 }
 
 func ExampleCubeMp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Mp())
 	// Output:
@@ -312,7 +312,7 @@ func ExampleCubeMp() {
 }
 
 func ExampleCubeM2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.M2())
 	// Output:
@@ -328,7 +328,7 @@ func ExampleCubeM2() {
 }
 
 func ExampleCubeS() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.S())
 	// Output:
@@ -344,7 +344,7 @@ func ExampleCubeS() {
 }
 
 func ExampleCubeSp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Sp())
 	// Output:
@@ -360,7 +360,7 @@ func ExampleCubeSp() {
 }
 
 func ExampleCubeS2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.S2())
 	// Output:
@@ -376,7 +376,7 @@ func ExampleCubeS2() {
 }
 
 func ExampleCubeE() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.E())
 	// Output:
@@ -392,7 +392,7 @@ func ExampleCubeE() {
 }
 
 func ExampleCubeEp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Ep())
 	// Output:
@@ -408,7 +408,7 @@ func ExampleCubeEp() {
 }
 
 func ExampleCubeE2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.E2())
 	// Output:
@@ -424,7 +424,7 @@ func ExampleCubeE2() {
 }
 
 func ExampleCubeX() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.X())
 	// Output:
@@ -440,7 +440,7 @@ func ExampleCubeX() {
 }
 
 func ExampleCubeXp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Xp())
 	// Output:
@@ -456,7 +456,7 @@ func ExampleCubeXp() {
 }
 
 func ExampleCubeX2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.X2())
 	// Output:
@@ -472,7 +472,7 @@ func ExampleCubeX2() {
 }
 
 func ExampleCubeY() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Y())
 	// Output:
@@ -488,7 +488,7 @@ func ExampleCubeY() {
 }
 
 func ExampleCubeYp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Yp())
 	// Output:
@@ -503,7 +503,7 @@ func ExampleCubeYp() {
 	//         |Y9 Y6 Y3|
 }
 func ExampleCubeY2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Y2())
 	// Output:
@@ -519,7 +519,7 @@ func ExampleCubeY2() {
 }
 
 func ExampleCubeZ() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Z())
 	// Output:
@@ -535,7 +535,7 @@ func ExampleCubeZ() {
 }
 
 func ExampleCubeZp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Zp())
 	// Output:
@@ -551,7 +551,7 @@ func ExampleCubeZp() {
 }
 
 func ExampleCubeZ2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(true)
 	fmt.Println(c.Z2())
 	// Output:
@@ -570,7 +570,7 @@ func ExampleCubeZ2() {
 // because those moves are made using
 // other basic moves that are already well tested
 func ExampleCubeRw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Rw())
 	// Output:
@@ -586,7 +586,7 @@ func ExampleCubeRw() {
 }
 
 func ExampleCubeRwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Rwp())
 	// Output:
@@ -602,7 +602,7 @@ func ExampleCubeRwp() {
 }
 
 func ExampleCubeRw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Rw2())
 	// Output:
@@ -618,7 +618,7 @@ func ExampleCubeRw2() {
 }
 
 func ExampleCubeLw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Lw())
 	// Output:
@@ -634,7 +634,7 @@ func ExampleCubeLw() {
 }
 
 func ExampleCubeLwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Lwp())
 	// Output:
@@ -650,7 +650,7 @@ func ExampleCubeLwp() {
 }
 
 func ExampleCubeLw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Lw2())
 	// Output:
@@ -666,7 +666,7 @@ func ExampleCubeLw2() {
 }
 
 func ExampleCubeUw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Uw())
 	// Output:
@@ -682,7 +682,7 @@ func ExampleCubeUw() {
 }
 
 func ExampleCubeUwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Uwp())
 	// Output:
@@ -698,7 +698,7 @@ func ExampleCubeUwp() {
 }
 
 func ExampleCubeUw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Uw2())
 	// Output:
@@ -714,7 +714,7 @@ func ExampleCubeUw2() {
 }
 
 func ExampleCubeDw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Dw())
 	// Output:
@@ -730,7 +730,7 @@ func ExampleCubeDw() {
 }
 
 func ExampleCubeDwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Dwp())
 	// Output:
@@ -746,7 +746,7 @@ func ExampleCubeDwp() {
 }
 
 func ExampleCubeDw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Dw2())
 	// Output:
@@ -762,7 +762,7 @@ func ExampleCubeDw2() {
 }
 
 func ExampleCubeFw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Fw())
 	// Output:
@@ -778,7 +778,7 @@ func ExampleCubeFw() {
 }
 
 func ExampleCubeFwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Fwp())
 	// Output:
@@ -794,7 +794,7 @@ func ExampleCubeFwp() {
 }
 
 func ExampleCubeFw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Fw2())
 	// Output:
@@ -810,7 +810,7 @@ func ExampleCubeFw2() {
 }
 
 func ExampleCubeBw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Bw())
 	// Output:
@@ -826,7 +826,7 @@ func ExampleCubeBw() {
 }
 
 func ExampleCubeBwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Bwp())
 	// Output:
@@ -842,7 +842,7 @@ func ExampleCubeBwp() {
 }
 
 func ExampleCubeBw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Bw2())
 	// Output:
@@ -858,7 +858,7 @@ func ExampleCubeBw2() {
 }
 
 func ExampleCubeMw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Mw())
 	// Output:
@@ -874,7 +874,7 @@ func ExampleCubeMw() {
 }
 
 func ExampleCubeMwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Mwp())
 	// Output:
@@ -890,7 +890,7 @@ func ExampleCubeMwp() {
 }
 
 func ExampleCubeMw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Mw2())
 	// Output:
@@ -906,7 +906,7 @@ func ExampleCubeMw2() {
 }
 
 func ExampleCubeSw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Sw())
 	// Output:
@@ -922,7 +922,7 @@ func ExampleCubeSw() {
 }
 
 func ExampleCubeSwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Swp())
 	// Output:
@@ -938,7 +938,7 @@ func ExampleCubeSwp() {
 }
 
 func ExampleCubeSw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Sw2())
 	// Output:
@@ -954,7 +954,7 @@ func ExampleCubeSw2() {
 }
 
 func ExampleCubeEw() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Ew())
 	// Output:
@@ -970,7 +970,7 @@ func ExampleCubeEw() {
 }
 
 func ExampleCubeEwp() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Ewp())
 	// Output:
@@ -986,7 +986,7 @@ func ExampleCubeEwp() {
 }
 
 func ExampleCubeEw2() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.Ew2())
 	// Output:
@@ -1002,7 +1002,7 @@ func ExampleCubeEw2() {
 }
 
 func ExampleCubeScramble() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 	fmt.Println(c.U2().F2().Rp().B2().D2().B2().Rp().F2().
 		U2().R2().D().Fp().Dp().B().Fp().Rp().Dp().
@@ -1020,7 +1020,7 @@ func ExampleCubeScramble() {
 }
 
 func ExampleCubeExecute() {
-	c := NewCube(3)
+	c := NewCube(3, 0)
 	SetDebug(false)
 
 	a := NewAlg("U2 F2 R' B2 D2 B2 R' F2 U2 R2 D F' D' B F' R' D' U2 F' L2")

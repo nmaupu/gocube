@@ -2,21 +2,40 @@ package data
 
 import (
 	"bytes"
+	"github.com/fogleman/gg"
 	"strings"
 )
 
 type Cube struct {
-	Faces    map[string]Face
-	CubeSize int
-	moves    map[string](func() *Cube)
+	Faces     map[string]Face
+	CubeSize  int
+	moves     map[string](func() *Cube)
+	CubieSize float64
 }
 
-func NewCube(cubeSize int) *Cube {
+func NewCube(cubeSize int, cubieSize float64) *Cube {
+	return NewCubeColors(cubeSize, cubieSize, Colors)
+}
+
+// Create a new cube with a custom map of colors
+// Useful to generate OLL (replace useless colors with something else)
+func NewCubeColors(cubeSize int, cubieSize float64, colors map[string]Color) *Cube {
 	c := Cube{
-		Faces:    make(map[string]Face),
-		CubeSize: cubeSize,
+		Faces:     make(map[string]Face),
+		CubeSize:  cubeSize,
+		CubieSize: cubieSize,
 	}
 
+	// Creating faces
+	for k, color := range colors {
+		c.Faces[k] = *NewFace(cubeSize, color)
+	}
+
+	c.init()
+	return &c
+}
+
+func (c *Cube) init() {
 	// Creating moves funcs map
 	// So that we can make a call like:
 	// c.moves["R'"]()
@@ -93,13 +112,6 @@ func NewCube(cubeSize int) *Cube {
 	c.moves["e"] = c.Ew
 	c.moves["e'"] = c.Ewp
 	c.moves["e2"] = c.Ew2
-
-	// Creating faces
-	for k, color := range Colors {
-		c.Faces[k] = *NewFace(cubeSize, color)
-	}
-
-	return &c
 }
 
 func (c Cube) String() string {
@@ -138,6 +150,74 @@ func (c Cube) String() string {
 	}
 
 	return buf.String()
+}
+
+func (c *Cube) Draw(ctx *gg.Context, x, y float64) {
+	var mx, my, width float64
+
+	margin := float64(c.CubeSize) * c.CubieSize * 2 / 100
+	width = float64(c.CubeSize)*c.CubieSize + margin
+
+	mx = x + width
+	my = y
+	c.Faces["white"].Draw(ctx, mx, my, c.CubieSize)
+
+	mx = x
+	my = y + width
+	c.Faces["orange"].Draw(ctx, mx, my, c.CubieSize)
+
+	mx = x + width
+	c.Faces["green"].Draw(ctx, mx, my, c.CubieSize)
+
+	mx = x + 2*width
+	c.Faces["red"].Draw(ctx, mx, my, c.CubieSize)
+
+	mx = x + 3*width
+	c.Faces["blue"].Draw(ctx, mx, my, c.CubieSize)
+
+	mx = x + width
+	my = y + 2*width
+	c.Faces["yellow"].Draw(ctx, mx, my, c.CubieSize)
+}
+
+// Draw top view, single face
+// Useful for OLL
+// Cube faces should be prepared to be displayed faceColor on top (flip, rotate, etc ...)
+func (c *Cube) DrawTopView(ctx *gg.Context, x, y float64, faceColor string) {
+	var mx, my float64
+
+	type orientation struct {
+		U, D, L, R Face
+	}
+	// depending of faceColor shown, adjacent faces differ
+	orientationIndex := make(map[string]orientation)
+	orientationIndex["yellow"] = orientation{c.Faces["blue"], c.Faces["green"], c.Faces["red"], c.Faces["orange"]}
+	orientationIndex["white"] = orientation{c.Faces["blue"], c.Faces["green"], c.Faces["orange"], c.Faces["red"]}
+	orientationIndex["red"] = orientation{c.Faces["blue"], c.Faces["green"], c.Faces["white"], c.Faces["yellow"]}
+	orientationIndex["orange"] = orientation{c.Faces["blue"], c.Faces["green"], c.Faces["yellow"], c.Faces["white"]}
+	orientationIndex["blue"] = orientation{c.Faces["yellow"], c.Faces["white"], c.Faces["orange"], c.Faces["red"]}
+	orientationIndex["green"] = orientation{c.Faces["yellow"], c.Faces["white"], c.Faces["red"], c.Faces["orange"]}
+
+	margin := float64(c.CubeSize) * c.CubieSize * 2 / 100
+	mx = x + c.CubieSize
+	my = y + c.CubieSize
+	c.Faces[faceColor].Draw(ctx, mx, my, c.CubieSize)
+
+	// Display small up, down, left and right cubies around
+	my = my - c.CubieSize/2 - margin
+	orientationIndex[faceColor].U.Copy().FlipVertical().DrawRow(ctx, 0, mx, my, c.CubieSize)
+
+	mx = mx - c.CubieSize/2 - margin
+	my = my + c.CubieSize/2 + margin
+	orientationIndex[faceColor].L.DrawRowCol(ctx, 0, mx, my, c.CubieSize)
+
+	mx = x + c.CubieSize
+	my = y + c.CubieSize*float64(c.CubeSize+1) + margin
+	orientationIndex[faceColor].D.DrawRow(ctx, 0, mx, my, c.CubieSize)
+
+	mx = x + c.CubieSize*float64(c.CubeSize+1) + margin
+	my = y + c.CubieSize
+	orientationIndex[faceColor].R.Copy().FlipVertical().DrawRowCol(ctx, 0, mx, my, c.CubieSize)
 }
 
 func (c *Cube) R() *Cube {
