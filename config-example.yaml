@@ -1,136 +1,86 @@
 cube:
   size: 3
 
+pdf:
+  title: "CFOP: all 57 OLLs"
+  description: All 57 OLLs used for CFOP method
+
 draw:
   - view: top
     colors:
       - yellow
     preAlg: z2
-    title: "CFOP: all 57 OLL"
+    title: All edges oriented
+    spec:
+      - name: OLL X
+        algs:
+          - R U R' U R U2 R'
+          - (U') R' U2 R U R' U R
+      - name: OLL X
+        algs:
+          - R' U' R U' R' U2 R
+      - name: OLL X
+        algs:
+          - R U R' U R U' R' U R U2 R'
+          - (U') R U2 R' U' R U R' U' R U' R'
+          - R' U' R U' R' U R U' R' U2 R
+      - name: OLL X
+        algs:
+          - R2 D R' U2 R D' R' U2 R'
+          - (U2) R2 D' R U2 R' D R U2 R
+      - name: OLL X
+        algs:
+          - F' r U R' U' L' U l
+          - (U') F R' F' r U R U' r'
+      - name: OLL X
+        algs:
+          - R U2 R2 U' R2 U' R2 U2 R
+      - name: OLL X
+        algs:
+          - r U R' U' L' U l F'
+          - (U2) l' U' L U R U' r' F
+      - name: OLL X
+        algs:
+          - R U R' U R U2 R'
+          - (U') R' U2 R U R' U R
+      - name: OLL X
+        algs:
+          - R' U' R U' R' U2 R
+      - name: OLL X
+        algs:
+          - R U R' U R U' R' U R U2 R'
+          - (U') R U2 R' U' R U R' U' R U' R'
+          - R' U' R U' R' U R U' R' U2 R
+      - name: OLL X
+        algs:
+          - R2 D R' U2 R D' R' U2 R'
+          - (U2) R2 D' R U2 R' D R U2 R
+      - name: OLL X
+        algs:
+          - F' r U R' U' L' U l
+          - (U') F R' F' r U R U' r'
+      - name: OLL X
+        algs:
+          - R U2 R2 U' R2 U' R2 U2 R
+      - name: OLL X
+        algs:
+          - r U R' U' L' U l F'
+          - (U2) l' U' L U R U' r' F
+  - view: top
+    colors:
+      - yellow
+    preAlg: z2
+    title: Dot cases
     spec:
       - name: OLL 1
-        description: Dot case
         algs:
           - (R U2 R2) (F R F') U2 R' (F R F')
           - R U B' R B R2 U' R' F R F'
           - y R U' R2 D' r U' r' D R2 U R'
           - r U R' U R' r2 U' R' U R' r2 U2 r'
       - name: OLL 2
-        description: Dot case
         algs:
           - F R U R' U' F' f R U R' U' f'
           - F R U R' U' S R U R' U' f'
           - y r U r' U2 R U2 R' U2 r U' r'
           - R' U2 r U' r' U2 r U r' U2 R
-      - name: OLL 3
-        description: Dot case
-        algs:
-          - y' f R U R' U' f' U' F R U R' U' F'
-          - r' R2 U R' U r U2 r' U M'
-          - r' R U R' F2 R U L' U L M'
-          - y F U R U' R' F' U F R U R' U' F'
-      - name: OLL 4
-        description: Dot case
-        algs:
-          - R U2 R2 F R F' U2 R' F R F'
-          - R U B' R B R2 U' R' F R F'
-          - y R U' R2 D' r U' r' D R2 U R'
-          - r U R' U R' r2 U' R' U R' r2 U2 r'
-      - name: OLL 5
-        description: Dot case
-        algs:
-          - F R U R' U' F' f R U R' U' f'
-          - F R U R' U' S R U R' U' f'
-          - y r U r' U2 R U2 R' U2 r U' r'
-          - R' U2 r U' r' U2 r U r' U2 R
-      - name: OLL 6
-        description: Dot case
-        algs:
-          - y' f R U R' U' f' U' F R U R' U' F'
-          - r' R2 U R' U r U2 r' U M'
-          - r' R U R' F2 R U L' U L M'
-          - y F U R U' R' F' U F R U R' U' F'
-      - name: OLL 1
-        description: Dot case
-        algs:
-          - (R U2 R2) (F R F') U2 R' (F R F')
-          - R U B' R B R2 U' R' F R F'
-          - y R U' R2 D' r U' r' D R2 U R'
-          - r U R' U R' r2 U' R' U R' r2 U2 r'
-      - name: OLL 2
-        description: Dot case
-        algs:
-          - F R U R' U' F' f R U R' U' f'
-          - F R U R' U' S R U R' U' f'
-          - y r U r' U2 R U2 R' U2 r U' r'
-          - R' U2 r U' r' U2 r U r' U2 R
-      - name: OLL 3
-        description: Dot case
-        algs:
-          - y' f R U R' U' f' U' F R U R' U' F'
-          - r' R2 U R' U r U2 r' U M'
-          - r' R U R' F2 R U L' U L M'
-          - y F U R U' R' F' U F R U R' U' F'
-      - name: OLL 4
-        description: Dot case
-        algs:
-          - R U2 R2 F R F' U2 R' F R F'
-          - R U B' R B R2 U' R' F R F'
-          - y R U' R2 D' r U' r' D R2 U R'
-          - r U R' U R' r2 U' R' U R' r2 U2 r'
-      - name: OLL 5
-        description: Dot case
-        algs:
-          - F R U R' U' F' f R U R' U' f'
-          - F R U R' U' S R U R' U' f'
-          - y r U r' U2 R U2 R' U2 r U' r'
-          - R' U2 r U' r' U2 r U r' U2 R
-      - name: OLL 6
-        description: Dot case
-        algs:
-          - y' f R U R' U' f' U' F R U R' U' F'
-          - r' R2 U R' U r U2 r' U M'
-          - r' R U R' F2 R U L' U L M'
-          - y F U R U' R' F' U F R U R' U' F'
-      - name: OLL 1
-        description: Dot case
-        algs:
-          - (R U2 R2) (F R F') U2 R' (F R F')
-          - R U B' R B R2 U' R' F R F'
-          - y R U' R2 D' r U' r' D R2 U R'
-          - r U R' U R' r2 U' R' U R' r2 U2 r'
-      - name: OLL 2
-        description: Dot case
-        algs:
-          - F R U R' U' F' f R U R' U' f'
-          - F R U R' U' S R U R' U' f'
-          - y r U r' U2 R U2 R' U2 r U' r'
-          - R' U2 r U' r' U2 r U r' U2 R
-      - name: OLL 3
-        description: Dot case
-        algs:
-          - y' f R U R' U' f' U' F R U R' U' F'
-          - r' R2 U R' U r U2 r' U M'
-          - r' R U R' F2 R U L' U L M'
-          - y F U R U' R' F' U F R U R' U' F'
-      - name: OLL 4
-        description: Dot case
-        algs:
-          - R U2 R2 F R F' U2 R' F R F'
-          - R U B' R B R2 U' R' F R F'
-          - y R U' R2 D' r U' r' D R2 U R'
-          - r U R' U R' r2 U' R' U R' r2 U2 r'
-      - name: OLL 5
-        description: Dot case
-        algs:
-          - F R U R' U' F' f R U R' U' f'
-          - F R U R' U' S R U R' U' f'
-          - y r U r' U2 R U2 R' U2 r U' r'
-          - R' U2 r U' r' U2 r U r' U2 R
-      - name: OLL 6
-        description: Dot case
-        algs:
-          - y' f R U R' U' f' U' F R U R' U' F'
-          - r' R2 U R' U r U2 r' U M'
-          - r' R U R' F2 R U L' U L M'
-          - y F U R U' R' F' U F R U R' U' F'

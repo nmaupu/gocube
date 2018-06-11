@@ -9,32 +9,42 @@ import (
 	"github.com/signintech/gopdf"
 	"io/ioutil"
 	"log"
-	//"os"
+	"os"
 	"path/filepath"
 )
 
 const (
 	//595.28, 841.89 = A4
-	PdfWidth               = 595.28
-	PdfHeight              = 841.89
-	PdfMarginTop           = 20.0
-	PdfMarginLeft          = 20.0
-	PdfMarginRight         = 20.0
-	PdfTitleTextHeight     = 30.0
-	PdfTitlePaddingBottom  = 10.0
-	CellTitleTextHeight    = 20.0
-	CellTitlePaddingBottom = 5.0
-	CellSetupTextHeight    = 15.0
-	CellSetupPaddingBottom = 10.0
-	CellAlgTextHeight      = 15.0
-	CellMarginTop          = 5.0
-	CellMarginRight        = 5.0
-	CellPaddingTop         = 5.0
-	CellPaddingBottom      = 10.0
-	CellPaddingLeft        = 5.0
-	ImgWidthPtFull         = 110.0
-	ImgWidthPTop           = 80.0
-	ImgPaddingRight        = 10.0
+	PdfWidth                 = 595.28
+	PdfHeight                = 841.89
+	PdfMarginTop             = 15.0
+	PdfMarginLeft            = 20.0
+	PdfMarginRight           = 20.0
+	PdfTitleTextHeight       = 20.0
+	PdfTitlePaddingBottom    = 5.0
+	PdfSubTitleTextHeight    = 20.0
+	PdfSubTitlePaddingBottom = 5.0
+	CellTitleTextHeight      = 20.0
+	CellTitlePaddingBottom   = 5.0
+	CellSetupTextHeight      = 15.0
+	CellSetupPaddingBottom   = 10.0
+	CellAlgTextHeight        = 15.0
+	CellMarginTop            = 5.0
+	CellMarginRight          = 5.0
+	CellPaddingTop           = 5.0
+	CellPaddingBottom        = 10.0
+	CellPaddingLeft          = 5.0
+	ImgWidthPtFull           = 110.0
+	ImgWidthPTop             = 80.0
+	ImgPaddingRight          = 10.0
+
+	FontFileName     = "ttf/rockwell.ttf"
+	FontName         = "rockwell"
+	FontTitleSize    = 18
+	FontSubTitleSize = 16
+	FontAlgTitleSize = 14
+	FontSetupAlgSize = 12
+	FontAlgSize      = 10
 )
 
 func exportPDF(cmd *cli.Cmd) {
@@ -52,18 +62,18 @@ func exportPDF(cmd *cli.Cmd) {
 			log.Fatal(err)
 		}
 
-		//defer os.RemoveAll(tmpDir) // clean up
+		defer os.RemoveAll(tmpDir) // clean up
 
 		log.Printf("Temporary dir = %s", tmpDir)
 
 		pdf := gopdf.GoPdf{}
 		pdf.Start(gopdf.Config{PageSize: gopdf.Rect{W: PdfWidth, H: PdfHeight}})
-		err = pdf.AddTTFFont("rockwell", "ttf/rockwell.ttf")
+		err = pdf.AddTTFFont(FontName, FontFileName)
 		if err != nil {
 			log.Print(err.Error())
 			return
 		}
-		err = pdf.SetFont("rockwell", "", 11)
+		err = pdf.SetFont(FontName, "", FontAlgSize)
 		if err != nil {
 			log.Print(err.Error())
 			return
@@ -76,6 +86,10 @@ func exportPDF(cmd *cli.Cmd) {
 			preAlg := data.NewAlg(draw.PreAlg)
 			postAlg := data.NewAlg(draw.PostAlg)
 			colors := data.GetColors(draw.Colors...)
+
+			// Create a new page for each draw section
+			createNewPdfPage(&pdf, conf.Pdf.Title, draw.Title)
+			nbImages = 0
 
 			var mx, my float64
 			for kSpec, v := range draw.Spec {
@@ -99,14 +113,8 @@ func exportPDF(cmd *cli.Cmd) {
 				tmpFile := filepath.Join(tmpDir, fmt.Sprintf("file%d-%d", kDraw, kSpec))
 				ctx.SavePNG(tmpFile)
 
-				if nbImages%10 == 0 {
-					pdf.AddPage()
-					// Writing title
-					pdf.SetX(0)
-					pdf.SetY(PdfMarginTop)
-					pdf.SetFont("rockwell", "", 20)
-					rect := gopdf.Rect{W: PdfWidth, H: PdfTitleTextHeight}
-					pdf.CellWithOption(&rect, draw.Title, gopdf.CellOption{Align: gopdf.Middle | gopdf.Center})
+				if nbImages%10 == 0 && nbImages > 0 {
+					createNewPdfPage(&pdf, conf.Pdf.Title, draw.Title)
 					nbImages = 0
 				}
 
@@ -120,13 +128,13 @@ func exportPDF(cmd *cli.Cmd) {
 					CellPaddingBottom)
 				if nbImages%2 == 0 {
 					mx = PdfMarginLeft
-					my = PdfMarginTop + PdfTitleTextHeight + PdfTitlePaddingBottom + float64(nbImages/2)*(cellHeight+CellMarginTop)
+					my = PdfMarginTop + PdfTitleTextHeight + PdfTitlePaddingBottom + PdfSubTitleTextHeight + PdfSubTitlePaddingBottom + float64(nbImages/2)*(cellHeight+CellMarginTop)
 				} else {
 					mx = PdfWidth/2 + CellMarginRight/2
 				}
 				nbImages++
 
-				printPDFCell(
+				printPdfCell(
 					&pdf,
 					v.Name,
 					tmpFile,
@@ -143,8 +151,31 @@ func exportPDF(cmd *cli.Cmd) {
 	}
 }
 
+func createNewPdfPage(pdf *gopdf.GoPdf, pageTitle, pageSubTitle string) {
+	var my float64
+	var rect gopdf.Rect
+
+	pdf.AddPage()
+
+	// Writing title
+	my = PdfMarginTop
+	pdf.SetX(0)
+	pdf.SetY(my)
+	pdf.SetFont(FontName, "", FontTitleSize)
+	rect = gopdf.Rect{W: PdfWidth, H: PdfTitleTextHeight}
+	pdf.CellWithOption(&rect, pageTitle, gopdf.CellOption{Align: gopdf.Middle | gopdf.Center})
+
+	// Writing Subtitle
+	my += PdfTitleTextHeight + PdfTitlePaddingBottom
+	pdf.SetX(0)
+	pdf.SetY(my)
+	pdf.SetFont(FontName, "", FontSubTitleSize)
+	rect = gopdf.Rect{W: PdfWidth, H: PdfSubTitleTextHeight}
+	pdf.CellWithOption(&rect, pageSubTitle, gopdf.CellOption{Align: gopdf.Middle | gopdf.Center})
+}
+
 // Beware: pdf are using pt whereas images' are using px!
-func printPDFCell(pdf *gopdf.GoPdf, title string, imgFileName string, imgWidthPt, imgHeightPt float64, setupAlg string, algs []string, x, y float64) {
+func printPdfCell(pdf *gopdf.GoPdf, title string, imgFileName string, imgWidthPt, imgHeightPt float64, setupAlg string, algs []string, x, y float64) {
 	var mx, my float64
 	var rect gopdf.Rect
 
@@ -166,7 +197,7 @@ func printPDFCell(pdf *gopdf.GoPdf, title string, imgFileName string, imgWidthPt
 	my = y + CellPaddingTop
 	pdf.SetX(mx)
 	pdf.SetY(my)
-	pdf.SetFont("rockwell", "", 14)
+	pdf.SetFont(FontName, "", FontAlgTitleSize)
 	rect = gopdf.Rect{W: cellWidth - CellPaddingLeft*2, H: CellTitleTextHeight}
 	pdf.CellWithOption(&rect, title, gopdf.CellOption{Border: gopdf.Bottom, Align: gopdf.Middle | gopdf.Center})
 
@@ -175,7 +206,7 @@ func printPDFCell(pdf *gopdf.GoPdf, title string, imgFileName string, imgWidthPt
 	my += CellTitleTextHeight + CellTitlePaddingBottom
 	pdf.SetX(mx)
 	pdf.SetY(my)
-	pdf.SetFont("rockwell", "", 12)
+	pdf.SetFont(FontName, "", FontSetupAlgSize)
 	rect = gopdf.Rect{W: cellWidth - CellPaddingLeft*2, H: CellSetupTextHeight}
 	pdf.CellWithOption(&rect, fmt.Sprintf("Setup: %s", setupAlg), gopdf.CellOption{Align: gopdf.Left | gopdf.Middle})
 
@@ -186,7 +217,7 @@ func printPDFCell(pdf *gopdf.GoPdf, title string, imgFileName string, imgWidthPt
 	pdf.Image(imgFileName, mx, my, &rect)
 
 	// Print all algs
-	pdf.SetFont("rockwell", "", 10)
+	pdf.SetFont(FontName, "", FontAlgSize)
 	mx = x + CellPaddingLeft + imgWidthPt + ImgPaddingRight
 	//my = y + CellPaddingTop + CellTitleTextHeight + CellSetupTextHeight
 

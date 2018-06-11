@@ -19,7 +19,13 @@ type ConfigDrawSpec struct {
 	Algs        []string
 }
 
+type ConfigPdf struct {
+	Title       string
+	Description string
+}
+
 type Configuration struct {
 	Cube ConfigCube
 	Draw []ConfigDraw
+	Pdf  ConfigPdf
 }
