@@ -1,5 +1,5 @@
 hash: dcfcf29fd8b418032b0cf47ab6547a52b69b5ab260ca0672f64701c2b2d57c3c
-updated: 2018-06-10T17:13:34.781007+02:00
+updated: 2018-06-12T01:33:52.123087+02:00
 imports:
 - name: github.com/fogleman/gg
   version: 6166aa3c1afaee416f384645a81636267aee6d25
@@ -35,6 +35,8 @@ imports:
   version: c2353362d570a7bfa228149c62842019201cfb71
 - name: github.com/mitchellh/mapstructure
   version: bb74f1db0675b241733089d5a1faa5dd8b0ef57b
+- name: github.com/oelmekki/matrix
+  version: 068382df9967c331988b86ec6c287fb8c85270b1
 - name: github.com/pelletier/go-toml
   version: c01d1270ff3e442a8a57cddc1c92dc1138598194
 - name: github.com/signintech/gopdf
@@ -58,7 +60,6 @@ imports:
   subpackages:
   - font
   - font/basicfont
-  - font/gofont/goregular
   - math/fixed
 - name: golang.org/x/sys
   version: 7c1e4f34a39c8bf93b6a3379e4ffb3b118ecc614

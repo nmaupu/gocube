@@ -2,8 +2,10 @@ package cli
 
 import (
 	"fmt"
+	"github.com/fogleman/gg"
 	"github.com/jawher/mow.cli"
 	"github.com/nmaupu/gocube/compute"
+	"github.com/nmaupu/gocube/cube3d"
 	"github.com/nmaupu/gocube/data"
 	"os"
 )
@@ -28,6 +30,7 @@ func Process(appName, appDesc, appVersion string) {
 	app.Command("reverse", "Reverse the given algorithm", reverse)
 	app.Command("generate", "Generate algs", generate)
 	app.Command("exportPDF", "Export as a PDF", exportPDF)
+	app.Command("test3D", "Test 3D", test3D)
 
 	app.Action = func() {
 		c := data.NewCube(*size, float64(*cubieSize))
@@ -77,5 +80,21 @@ func generate(cmd *cli.Cmd) {
 			}
 			fmt.Println("-----")
 		}
+	}
+}
+
+func test3D(cmd *cli.Cmd) {
+	cmd.Action = func() {
+		c := data.NewCube(*size, float64(*cubieSize))
+
+		ctx := gg.NewContext(1000, 1000)
+		ctx.SetHexColor("#FFFFFF")
+		ctx.Clear()
+		ctx.SetHexColor("#000000")
+		ctx.SetLineWidth(1)
+
+		face := cube3d.BuildFace3d(c.Faces["green"], c.CubieSize)
+		cube3d.DrawFace(ctx, 200, 200, face, c.CubieSize)
+		ctx.SavePNG("/tmp/out.png")
 	}
 }

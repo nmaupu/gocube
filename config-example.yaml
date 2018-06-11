@@ -6,9 +6,14 @@ pdf:
   description: All 57 OLLs used for CFOP method
 
 draw:
-  - view: top
+  - view: full
     colors:
       - yellow
+      - white
+      - blue
+      - green
+      - orange
+      - red
     preAlg: z2
     title: All edges oriented
     spec:
