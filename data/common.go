@@ -11,7 +11,7 @@ const (
 	Orange = "#FF5800"
 	Blue   = "#0051BA"
 	Green  = "#009E60"
-	Gray   = "#383838"
+	Gray   = "#5E5E5E"
 )
 
 func ToggleDebug() {
