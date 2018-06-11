@@ -152,38 +152,48 @@ func (c Cube) String() string {
 	return buf.String()
 }
 
-func (c *Cube) Draw(ctx *gg.Context, x, y float64) {
-	var mx, my, width float64
+func (c *Cube) GetMargin() float64 {
+	return float64(c.CubeSize) * c.CubieSize * 2 / 100
+}
 
-	margin := float64(c.CubeSize) * c.CubieSize * 2 / 100
-	width = float64(c.CubeSize)*c.CubieSize + margin
+func (c *Cube) Draw() *gg.Context {
+	var mx, my float64
+	margin := c.GetMargin()
+	widthFace := float64(c.CubeSize) * c.CubieSize
 
-	mx = x + width
-	my = y
+	ctx := gg.NewContext(int(widthFace*4+margin*3), int(widthFace*3+margin*2))
+	ctx.SetHexColor("#FFFFFF")
+	ctx.Clear()
+	ctx.SetHexColor("#000000")
+
+	mx = widthFace + margin
+	my = 0
 	c.Faces["white"].Draw(ctx, mx, my, c.CubieSize)
 
-	mx = x
-	my = y + width
+	mx = 0
+	my = widthFace + margin
 	c.Faces["orange"].Draw(ctx, mx, my, c.CubieSize)
 
-	mx = x + width
+	mx = widthFace + margin
 	c.Faces["green"].Draw(ctx, mx, my, c.CubieSize)
 
-	mx = x + 2*width
+	mx = 2 * (widthFace + margin)
 	c.Faces["red"].Draw(ctx, mx, my, c.CubieSize)
 
-	mx = x + 3*width
+	mx = 3 * (widthFace + margin)
 	c.Faces["blue"].Draw(ctx, mx, my, c.CubieSize)
 
-	mx = x + width
-	my = y + 2*width
+	mx = widthFace + margin
+	my = 2 * (widthFace + margin)
 	c.Faces["yellow"].Draw(ctx, mx, my, c.CubieSize)
+
+	return ctx
 }
 
 // Draw top view, single face
 // Useful for OLL
 // Cube faces should be prepared to be displayed faceColor on top (flip, rotate, etc ...)
-func (c *Cube) DrawTopView(ctx *gg.Context, x, y float64, faceColor string) {
+func (c *Cube) DrawTopView(faceColor string) *gg.Context {
 	var mx, my float64
 
 	type orientation struct {
@@ -198,26 +208,36 @@ func (c *Cube) DrawTopView(ctx *gg.Context, x, y float64, faceColor string) {
 	orientationIndex["blue"] = orientation{c.Faces["yellow"], c.Faces["white"], c.Faces["orange"], c.Faces["red"]}
 	orientationIndex["green"] = orientation{c.Faces["yellow"], c.Faces["white"], c.Faces["red"], c.Faces["orange"]}
 
-	margin := float64(c.CubeSize) * c.CubieSize * 2 / 100
-	mx = x + c.CubieSize
-	my = y + c.CubieSize
+	margin := c.GetMargin()
+	// width = cubieSize/2 + margin + faceWidth + margin + cubeSize/2
+	width := 2*margin + float64(c.CubeSize+1)*c.CubieSize
+	ctx := gg.NewContext(int(width), int(width))
+	ctx.SetHexColor("#FFFFFF")
+	ctx.Clear()
+	ctx.SetHexColor("#000000")
+
+	mx = c.CubieSize/2 + margin
+	my = c.CubieSize/2 + margin
 	c.Faces[faceColor].Draw(ctx, mx, my, c.CubieSize)
 
 	// Display small up, down, left and right cubies around
-	my = my - c.CubieSize/2 - margin
+	mx = c.CubieSize/2 + margin
+	my = 0
 	orientationIndex[faceColor].U.Copy().FlipVertical().DrawRow(ctx, 0, mx, my, c.CubieSize)
 
-	mx = mx - c.CubieSize/2 - margin
-	my = my + c.CubieSize/2 + margin
+	mx = 0
+	my = c.CubieSize/2 + margin
 	orientationIndex[faceColor].L.DrawRowCol(ctx, 0, mx, my, c.CubieSize)
 
-	mx = x + c.CubieSize
-	my = y + c.CubieSize*float64(c.CubeSize+1) + margin
+	mx = c.CubieSize/2 + margin
+	my = c.CubieSize/2 + c.CubieSize*float64(c.CubeSize) + 2*margin
 	orientationIndex[faceColor].D.DrawRow(ctx, 0, mx, my, c.CubieSize)
 
-	mx = x + c.CubieSize*float64(c.CubeSize+1) + margin
-	my = y + c.CubieSize
+	mx = c.CubieSize/2 + c.CubieSize*float64(c.CubeSize) + 2*margin
+	my = c.CubieSize/2 + margin
 	orientationIndex[faceColor].R.Copy().FlipVertical().DrawRowCol(ctx, 0, mx, my, c.CubieSize)
+
+	return ctx
 }
 
 func (c *Cube) R() *Cube {

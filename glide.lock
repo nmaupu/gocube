@@ -1,13 +1,26 @@
 hash: dcfcf29fd8b418032b0cf47ab6547a52b69b5ab260ca0672f64701c2b2d57c3c
-updated: 2018-06-08T01:07:50.67591+02:00
+updated: 2018-06-10T17:13:34.781007+02:00
 imports:
 - name: github.com/fogleman/gg
   version: 6166aa3c1afaee416f384645a81636267aee6d25
+- name: github.com/fsnotify/fsnotify
+  version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
 - name: github.com/golang/freetype
   version: e2365dfdc4a05e4b8299a783240d4a7d5a65d4e4
   subpackages:
   - raster
   - truetype
+- name: github.com/hashicorp/hcl
+  version: ef8a98b0bbce4a65b5aa4c368430a80ddc533168
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
 - name: github.com/jawher/mow.cli
   version: 2f22195f169da29d54624afd9eb83ada5c9e4ee9
   subpackages:
@@ -18,6 +31,28 @@ imports:
   - internal/matcher
   - internal/parser
   - internal/values
+- name: github.com/magiconair/properties
+  version: c2353362d570a7bfa228149c62842019201cfb71
+- name: github.com/mitchellh/mapstructure
+  version: bb74f1db0675b241733089d5a1faa5dd8b0ef57b
+- name: github.com/pelletier/go-toml
+  version: c01d1270ff3e442a8a57cddc1c92dc1138598194
+- name: github.com/signintech/gopdf
+  version: 1b7ea99017dbed0067d9c1c063968c50bc968ad8
+  subpackages:
+  - fontmaker/core
+- name: github.com/spf13/afero
+  version: 787d034dfe70e44075ccc060d346146ef53270ad
+  subpackages:
+  - mem
+- name: github.com/spf13/cast
+  version: 8965335b8c7107321228e3e3702cab9832751bac
+- name: github.com/spf13/jwalterweatherman
+  version: 7c0cea34c8ece3fbeb2b27ab9b59511d360fb394
+- name: github.com/spf13/pflag
+  version: 9ff6c6923cfffbcd502984b8e0c80539a94968b7
+- name: github.com/spf13/viper
+  version: 25b30aa063fc18e48662b86996252eabdcf2f0c7
 - name: golang.org/x/image
   version: af66defab954cb421ca110193eed9477c8541e2a
   subpackages:
@@ -25,4 +60,15 @@ imports:
   - font/basicfont
   - font/gofont/goregular
   - math/fixed
+- name: golang.org/x/sys
+  version: 7c1e4f34a39c8bf93b6a3379e4ffb3b118ecc614
+  subpackages:
+  - unix
+- name: golang.org/x/text
+  version: 2910a502d2bf9e43193af9d68ca516529614eed3
+  subpackages:
+  - transform
+  - unicode/norm
+- name: gopkg.in/yaml.v2
+  version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 testImports: []

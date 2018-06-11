@@ -43,7 +43,9 @@ func (a *Alg) AddMove(m string) *Alg {
 }
 
 func (a *Alg) AddMoves(moves string) *Alg {
-	mo := strings.Split(moves, " ")
+	m := strings.Replace(moves, "(", "", -1)
+	m = strings.Replace(m, ")", "", -1)
+	mo := strings.Split(m, " ")
 
 	for _, m := range mo {
 		a.AddMove(m)

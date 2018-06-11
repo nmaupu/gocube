@@ -27,10 +27,16 @@ func SetDebug(b bool) {
 }
 
 func GetColorsOLL(color string) map[string]Color {
+	return GetColors(color)
+}
+
+// Get colors properties given parameters
+// All non present colors will be represented as gray
+func GetColors(cols ...string) map[string]Color {
 	c := make(map[string]Color, len(Colors))
 	for k, v := range Colors {
 		c[k] = v
-		if k != color {
+		if !inSlice(cols, k) {
 			val := c[k]
 			val.HexColor = Gray
 			c[k] = val
@@ -38,6 +44,16 @@ func GetColorsOLL(color string) map[string]Color {
 	}
 
 	return c
+}
+
+func inSlice(slice []string, elt string) bool {
+	for _, v := range slice {
+		if v == elt {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Default colors
