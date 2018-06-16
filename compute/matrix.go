@@ -14,6 +14,12 @@ func NewMatrix(row []float64) *Matrix {
 	return ret
 }
 
+func NewVector(coords []float64) *Matrix {
+	ret := new(Matrix)
+	ret.AddRow(coords)
+	return ret.Transpose()
+}
+
 func (m *Matrix) AddRow(row []float64) *Matrix {
 	m.Data = append(m.Data, row)
 	return m
