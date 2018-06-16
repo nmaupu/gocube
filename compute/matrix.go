@@ -1,5 +1,9 @@
 package compute
 
+import (
+	"fmt"
+)
+
 type Matrix struct {
 	Data [][]float64
 }
@@ -81,7 +85,7 @@ func (m *Matrix) Transpose() *Matrix {
 
 func (m1 *Matrix) Product(m2 *Matrix) *Matrix {
 	if m1.GetNbCols() != m2.GetNbRows() {
-		return nil
+		panic(fmt.Sprintf("Unable to multiply matrices : %+v, %+v", m1, m2))
 	}
 
 	matProd := new(Matrix)
@@ -104,6 +108,7 @@ func (m1 *Matrix) Product(m2 *Matrix) *Matrix {
 
 func (m *Matrix) ScalarMultiply(s float64) *Matrix {
 	ret := new(Matrix)
+
 	for i := 0; i < m.GetNbRows(); i++ {
 		row := make([]float64, 0)
 
@@ -129,7 +134,7 @@ func mult(a1, a2 []float64) float64 {
 
 func (m1 *Matrix) Add(m2 *Matrix) *Matrix {
 	if m1.GetNbCols() != m2.GetNbCols() || m1.GetNbRows() != m2.GetNbRows() {
-		return nil
+		panic(fmt.Sprintf("Unable to add matrices: %+v, %+v", m1, m2))
 	}
 
 	m := new(Matrix)

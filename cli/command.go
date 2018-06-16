@@ -90,7 +90,6 @@ func test3D(cmd *cli.Cmd) {
 		//alg := g.GenerateAlg(20)
 		//fmt.Println(alg)
 		c.Execute(data.NewAlg("U' B' D2 L2 F2 R2 U B' L2 B' U B' D F2 U2 D2 B D U R2"))
-		c.Execute(data.NewAlg("y2 z'"))
 
 		ctx := gg.NewContext(1000, 1000)
 		ctx.SetHexColor("#FFFFFF")

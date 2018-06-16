@@ -150,7 +150,7 @@ func DrawCubie(ctx *gg.Context, px, py float64, c3d cubie3d, radX, radY float64)
 		Product(GetOrthographicProjectionMatrix())
 
 	// Trace cubie using lines
-	ctx.SetLineWidth(c3d.CubieSize * 5 / 100)
+	ctx.SetLineWidth(c3d.CubieSize * 10 / 100)
 	ctx.MoveTo(px+rot1.At(0, 0), py+rot1.At(0, 1))
 	ctx.LineTo(px+rot2.At(0, 0), py+rot2.At(0, 1))
 	ctx.LineTo(px+rot4.At(0, 0), py+rot4.At(0, 1))
@@ -178,11 +178,11 @@ func DrawCube(ctx *gg.Context, x, y float64, cube *data.Cube) *gg.Context {
 	//ctx.Stroke()
 
 	face3dMatrices = buildFace3d(cube, "white")
-	DrawFace(ctx, x, y, face3dMatrices, getRad(32), getRad(45))
+	DrawFace(ctx, x, y, face3dMatrices, getRad(35.264), getRad(45))
 	face3dMatrices = buildFace3d(cube, "green")
-	DrawFace(ctx, x, y, face3dMatrices, getRad(32), getRad(45))
+	DrawFace(ctx, x, y, face3dMatrices, getRad(35.264), getRad(45))
 	face3dMatrices = buildFace3d(cube, "red")
-	DrawFace(ctx, x, y, face3dMatrices, getRad(32), getRad(45))
+	DrawFace(ctx, x, y, face3dMatrices, getRad(35.264), getRad(45))
 
 	return ctx
 }

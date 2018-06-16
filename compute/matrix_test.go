@@ -160,8 +160,12 @@ func TestProduct(t *testing.T) {
 	mat2.AddRow([]float64{2, 7, 5, 3})
 	mat2.AddRow([]float64{9, 0, 11, 8})
 
+	recov := false
+	defer func() {
+		recov = recover() != nil
+	}()
 	matProduct = mat1.Product(mat2)
-	if matProduct != nil {
+	if !recov {
 		t.Errorf("Matrix product is incorrect, want: nil, got: %+v", matProduct)
 	}
 
@@ -173,8 +177,12 @@ func TestProduct(t *testing.T) {
 	mat2 = new(Matrix)
 	mat2.AddRow([]float64{3})
 
+	recov = false
+	defer func() {
+		recov = recover() != nil
+	}()
 	matProduct = mat1.Product(mat2)
-	if matProduct != nil {
+	if !recov {
 		t.Errorf("Matrix product is incorrect, want: nil, got: %+v", matProduct)
 	}
 }
@@ -192,6 +200,18 @@ func TestScalarMultiply(t *testing.T) {
 
 	if !matRes.Equals(matExpected) {
 		t.Errorf("Incorrect ScalarMultiply, want: %+v, got: %+v", matExpected, matRes)
+	}
+
+	// Second test, composition
+	mat1 = new(Matrix)
+	mat1.AddRow([]float64{1, 2, 3})
+
+	matExpected = new(Matrix)
+	matExpected.AddRow([]float64{-2, -4, -6})
+
+	mat1 = mat1.ScalarMultiply(2).ScalarMultiply(-1)
+	if !mat1.Equals(matExpected) {
+		t.Errorf("Incorrect ScalarMultiply is not composeable, want: %+v, got: %+v", matExpected, mat1)
 	}
 }
 
@@ -211,5 +231,36 @@ func TestAdd(t *testing.T) {
 	matAdd := mat1.Add(mat2)
 	if !matAdd.Equals(matExpected) {
 		t.Errorf("Incorrect matrices addition, want: %+v, got: %+v", matExpected, matAdd)
+	}
+
+	// Second test - composition
+	mat3 := new(Matrix)
+	mat3.AddRow([]float64{1, 1, 1})
+	mat3.AddRow([]float64{1, 1, 1})
+
+	matExpected = new(Matrix)
+	matExpected.AddRow([]float64{7, 7, 7})
+	matExpected.AddRow([]float64{13, 13, 13})
+
+	matAdd = mat1.Add(mat2).Add(mat3)
+	if !matAdd.Equals(matExpected) {
+		t.Errorf("Incorrect matrices addition (composition), want: %+v, got: %+v", matExpected, matAdd)
+	}
+}
+
+func TestComposition(t *testing.T) {
+	mat1 := new(Matrix)
+	mat1.AddRow([]float64{1, 1, 1})
+
+	mat2 := new(Matrix)
+	mat2.AddRow([]float64{-1. / 2., -1. / 2., -1. / 2.})
+
+	scalar := 10.
+	matExpected := new(Matrix)
+	matExpected.AddRow([]float64{5, 5, 5})
+
+	matRes := mat1.Add(mat2).ScalarMultiply(scalar)
+	if !matRes.Equals(matExpected) {
+		t.Errorf("Incorrect matrices composition, want: %+v, got: %+v", matExpected, matRes)
 	}
 }
