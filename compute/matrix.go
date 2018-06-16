@@ -15,6 +15,10 @@ func (m *Matrix) AddRow(row []float64) *Matrix {
 	return m
 }
 
+func (m *Matrix) At(row, col int) float64 {
+	return m.Data[row][col]
+}
+
 func (m *Matrix) GetNbRows() int {
 	return len(m.Data)
 }
@@ -121,4 +125,21 @@ func mult(a1, a2 []float64) float64 {
 	}
 
 	return ret
+}
+
+func (m1 *Matrix) Add(m2 *Matrix) *Matrix {
+	if m1.GetNbCols() != m2.GetNbCols() || m1.GetNbRows() != m2.GetNbRows() {
+		return nil
+	}
+
+	m := new(Matrix)
+	for i := 0; i < len(m1.Data); i++ {
+		row := make([]float64, 0)
+		for j := 0; j < len(m1.Data[i]); j++ {
+			row = append(row, m1.Data[i][j]+m2.Data[i][j])
+		}
+		m.AddRow(row)
+	}
+
+	return m
 }

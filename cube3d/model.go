@@ -2,115 +2,187 @@ package cube3d
 
 import (
 	"github.com/fogleman/gg"
+	"github.com/nmaupu/gocube/compute"
 	"github.com/nmaupu/gocube/data"
-	"github.com/oelmekki/matrix"
 	"math"
 )
 
-func BuildFace3d(face data.Face, cubieSize float64) []matrix.Matrix {
-	var mat []matrix.Matrix
+type cubie3d struct {
+	Point     *compute.Matrix
+	HexColor  string
+	CubieSize float64
+	DirRight  *compute.Matrix
+	DirDown   *compute.Matrix
+}
+
+func GetRotationMatrixX(rad float64) *compute.Matrix {
+	m := new(compute.Matrix)
+	m.AddRow([]float64{1, 0, 0})
+	m.AddRow([]float64{0, math.Cos(rad), -1 * math.Sin(rad)})
+	m.AddRow([]float64{0, math.Sin(rad), math.Cos(rad)})
+	return m
+}
+func GetRotationMatrixY(rad float64) *compute.Matrix {
+	m := new(compute.Matrix)
+	m.AddRow([]float64{math.Cos(rad), 0, math.Sin(rad)})
+	m.AddRow([]float64{0, 1, 0})
+	m.AddRow([]float64{-1 * math.Sin(rad), 0, math.Cos(rad)})
+	return m
+}
+func GetRotationMatrixZ(rad float64) *compute.Matrix {
+	m := new(compute.Matrix)
+	m.AddRow([]float64{math.Cos(rad), -1 * math.Sin(rad), 0})
+	m.AddRow([]float64{math.Sin(rad), math.Cos(rad), 0})
+	m.AddRow([]float64{0, 0, 1})
+	return m
+}
+
+func GetOrthographicProjectionMatrix() *compute.Matrix {
+	m := new(compute.Matrix)
+	m.AddRow([]float64{1, 0, 0})
+	m.AddRow([]float64{0, 1, 0})
+	m.AddRow([]float64{0, 0, 0})
+	return m
+}
+
+func getRad(deg float64) float64 {
+	return (deg * math.Pi) / 180
+}
+
+func buildFace3d(cube *data.Cube, color string) []cubie3d {
+	ret := make([]cubie3d, 0)
+	face := cube.Faces[color]
+	if color == "orange" {
+		face = face.FlipVertical()
+	}
+	if color == "yellow" {
+		face = face.FlipHorizontal()
+	}
 
 	for i := 0; i < len(face.Colors); i++ {
 		for j := 0; j < len(face.Colors[i]); j++ {
-			m, _ := matrix.Build(
-				matrix.Builder{
-					matrix.Row{float64(i) * cubieSize, float64(j) * cubieSize, 0},
-				},
-			)
+			c3d := cubie3d{
+				HexColor:  face.Colors[i][j].HexColor,
+				CubieSize: cube.CubieSize,
+			}
 
-			mat = append(mat, m)
+			switch color {
+			case "white":
+				x := float64(j) * cube.CubieSize
+				y := 0.0
+				z := float64(i) * cube.CubieSize
+
+				translationZ := compute.NewMatrix([]float64{0, 0, -1 * float64(cube.CubeSize-1) * cube.CubieSize})
+				c3d.Point = compute.NewMatrix([]float64{x, y, z}).Add(translationZ)
+				c3d.DirRight = compute.NewMatrix([]float64{float64(cube.CubieSize), 0, 0})
+				c3d.DirDown = compute.NewMatrix([]float64{0, 0, -1.0 * float64(cube.CubieSize)})
+
+			case "yellow":
+				x := float64(j) * cube.CubieSize
+				y := float64(cube.CubeSize) * cube.CubieSize
+				z := float64(i) * cube.CubieSize
+
+				translationZ := compute.NewMatrix([]float64{0, 0, -1 * float64(cube.CubeSize-1) * cube.CubieSize})
+				c3d.Point = compute.NewMatrix([]float64{x, y, z}).Add(translationZ)
+				c3d.DirRight = compute.NewMatrix([]float64{float64(cube.CubieSize), 0, 0})
+				c3d.DirDown = compute.NewMatrix([]float64{0, 0, -1.0 * float64(cube.CubieSize)})
+
+			case "green":
+				x := float64(j) * cube.CubieSize
+				y := float64(i) * cube.CubieSize
+				z := 0.0
+
+				c3d.Point = compute.NewMatrix([]float64{x, y, z})
+				c3d.DirRight = compute.NewMatrix([]float64{float64(cube.CubieSize), 0, 0})
+				c3d.DirDown = compute.NewMatrix([]float64{0, 1 * float64(cube.CubieSize), 0})
+
+			case "red":
+				x := float64(cube.CubeSize) * cube.CubieSize
+				y := float64(i) * cube.CubieSize
+				z := -1 * float64(j) * cube.CubieSize
+
+				c3d.Point = compute.NewMatrix([]float64{x, y, z})
+				c3d.DirRight = compute.NewMatrix([]float64{0, 0, -1 * float64(cube.CubieSize)})
+				c3d.DirDown = compute.NewMatrix([]float64{0, float64(cube.CubieSize), 0})
+
+			case "orange":
+				x := 0.0
+				y := float64(i) * cube.CubieSize
+				z := -1 * float64(j) * cube.CubieSize
+
+				c3d.Point = compute.NewMatrix([]float64{x, y, z})
+				c3d.DirRight = compute.NewMatrix([]float64{0, 0, -1 * float64(cube.CubieSize)})
+				c3d.DirDown = compute.NewMatrix([]float64{0, float64(cube.CubieSize), 0})
+
+			}
+
+			ret = append(ret, c3d)
 		}
 	}
 
-	return mat
+	return ret
 }
 
-func GetRotationMatrixX(rad float64) matrix.Matrix {
-	m, _ := matrix.Build(
-		matrix.Builder{
-			matrix.Row{1, 0, 0},
-			matrix.Row{0, math.Cos(rad), -1 * math.Sin(rad)},
-			matrix.Row{0, math.Sin(rad), math.Cos(rad)},
-		},
-	)
-	return m
-}
-func GetRotationMatrixY(rad float64) matrix.Matrix {
-	m, _ := matrix.Build(
-		matrix.Builder{
-			matrix.Row{math.Cos(rad), 0, math.Sin(rad)},
-			matrix.Row{0, 1, 0},
-			matrix.Row{-1 * math.Sin(rad), 0, math.Cos(rad)},
-		},
-	)
-	return m
-}
-func GetRotationMatrixZ(rad float64) matrix.Matrix {
-	m, _ := matrix.Build(
-		matrix.Builder{
-			matrix.Row{math.Cos(rad), -1 * math.Sin(rad), 0},
-			matrix.Row{math.Sin(rad), math.Cos(rad), 0},
-			matrix.Row{0, 0, 1},
-		},
-	)
-	return m
-}
+func DrawCubie(ctx *gg.Context, px, py float64, c3d cubie3d, radX, radY float64) {
+	m1 := c3d.Point
+	m2 := c3d.Point.Add(c3d.DirRight)
+	m3 := m1.Add(c3d.DirDown)
+	m4 := m2.Add(c3d.DirDown)
 
-func GetOrthographicProjectionMatrix() matrix.Matrix {
-	m, _ := matrix.Build(
-		matrix.Builder{
-			matrix.Row{1, 0, 0},
-			matrix.Row{0, 1, 0},
-			matrix.Row{0, 0, 0},
-		},
-	)
-	return m
-}
+	rot1 := m1.
+		Product(GetRotationMatrixY(radY)).
+		Product(GetRotationMatrixX(radX)).
+		Product(GetOrthographicProjectionMatrix())
 
-func DrawCubie(ctx *gg.Context, px, py float64, mat matrix.Matrix, cubieSize float64, radX, radY float64) {
-	x := mat.At(0, 0)
-	y := mat.At(0, 1)
-	z := mat.At(0, 2)
-	m1 := mat
-	m2, _ := matrix.Build(matrix.Builder{
-		matrix.Row{x + cubieSize, y, z},
-	})
-	m3, _ := matrix.Build(matrix.Builder{
-		matrix.Row{x, y + cubieSize, z},
-	})
-	m4, _ := matrix.Build(matrix.Builder{
-		matrix.Row{x + cubieSize, y + cubieSize, z},
-	})
+	rot2 := m2.
+		Product(GetRotationMatrixY(radY)).
+		Product(GetRotationMatrixX(radX)).
+		Product(GetOrthographicProjectionMatrix())
 
-	rot1, _ := m1.DotProduct(GetRotationMatrixY(radY))
-	rot1, _ = rot1.DotProduct(GetRotationMatrixX(radX))
-	rot1, _ = rot1.DotProduct(GetOrthographicProjectionMatrix())
-	rot2, _ := m2.DotProduct(GetRotationMatrixY(radY))
-	rot2, _ = rot2.DotProduct(GetRotationMatrixX(radX))
-	rot2, _ = rot2.DotProduct(GetOrthographicProjectionMatrix())
-	rot3, _ := m3.DotProduct(GetRotationMatrixY(radY))
-	rot3, _ = rot3.DotProduct(GetRotationMatrixX(radX))
-	rot3, _ = rot3.DotProduct(GetOrthographicProjectionMatrix())
-	rot4, _ := m4.DotProduct(GetRotationMatrixY(radY))
-	rot4, _ = rot4.DotProduct(GetRotationMatrixX(radX))
-	rot4, _ = rot4.DotProduct(GetOrthographicProjectionMatrix())
+	rot3 := m3.
+		Product(GetRotationMatrixY(radY)).
+		Product(GetRotationMatrixX(radX)).
+		Product(GetOrthographicProjectionMatrix())
+
+	rot4 := m4.
+		Product(GetRotationMatrixY(radY)).
+		Product(GetRotationMatrixX(radX)).
+		Product(GetOrthographicProjectionMatrix())
 
 	// Trace cubie using lines
-	ctx.NewSubPath()
-	ctx.DrawLine(px+rot1.At(0, 0), py+rot1.At(0, 1), px+rot2.At(0, 0), py+rot2.At(0, 1))
-	ctx.DrawLine(px+rot2.At(0, 0), py+rot2.At(0, 1), px+rot4.At(0, 0), py+rot4.At(0, 1))
-	ctx.DrawLine(px+rot4.At(0, 0), py+rot4.At(0, 1), px+rot3.At(0, 0), py+rot3.At(0, 1))
-	ctx.DrawLine(px+rot3.At(0, 0), py+rot3.At(0, 1), px+rot1.At(0, 0), py+rot1.At(0, 1))
+	ctx.SetLineWidth(c3d.CubieSize * 5 / 100)
+	ctx.MoveTo(px+rot1.At(0, 0), py+rot1.At(0, 1))
+	ctx.LineTo(px+rot2.At(0, 0), py+rot2.At(0, 1))
+	ctx.LineTo(px+rot4.At(0, 0), py+rot4.At(0, 1))
+	ctx.LineTo(px+rot3.At(0, 0), py+rot3.At(0, 1))
+	ctx.LineTo(px+rot1.At(0, 0), py+rot1.At(0, 1))
+	ctx.SetHexColor(c3d.HexColor)
+	ctx.FillPreserve()
+	ctx.SetHexColor("#000000")
 	ctx.Stroke()
 }
 
-func DrawFace(ctx *gg.Context, x, y float64, face []matrix.Matrix, cubieSize float64, radX, radY float64) {
-	for _, f := range face {
-		DrawCubie(ctx, x, y, f, cubieSize, radX, radY)
+func DrawFace(ctx *gg.Context, x, y float64, c3ds []cubie3d, radX, radY float64) {
+	for _, c3d := range c3ds {
+		DrawCubie(ctx, x, y, c3d, radX, radY)
 	}
 }
 
-func DrawCube(ctx *gg.Context, x, y float64, cube *data.Cube) {
-	faceWhite := BuildFace3d(cube.Faces["white"], cube.CubieSize)
-	DrawFace(ctx, x, y, faceWhite, cube.CubieSize, 32*math.Pi/180, 0)
+func DrawCube(ctx *gg.Context, x, y float64, cube *data.Cube) *gg.Context {
+	var face3dMatrices []cubie3d
+
+	// Draw axes
+	//ctx.NewSubPath()
+	//ctx.DrawLine(x, y, x+400, y)
+	//ctx.DrawLine(x, y, x, y+400)
+	//ctx.Stroke()
+
+	face3dMatrices = buildFace3d(cube, "white")
+	DrawFace(ctx, x, y, face3dMatrices, getRad(32), getRad(45))
+	face3dMatrices = buildFace3d(cube, "green")
+	DrawFace(ctx, x, y, face3dMatrices, getRad(32), getRad(45))
+	face3dMatrices = buildFace3d(cube, "red")
+	DrawFace(ctx, x, y, face3dMatrices, getRad(32), getRad(45))
+
+	return ctx
 }

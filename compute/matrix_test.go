@@ -174,3 +174,22 @@ func TestScalarMultiply(t *testing.T) {
 		t.Errorf("Incorrect ScalarMultiply, want: %+v, got: %+v", matExpected, matRes)
 	}
 }
+
+func TestAdd(t *testing.T) {
+	mat1 := new(Matrix)
+	mat1.AddRow([]float64{0, 1, 2})
+	mat1.AddRow([]float64{9, 8, 7})
+
+	mat2 := new(Matrix)
+	mat2.AddRow([]float64{6, 5, 4})
+	mat2.AddRow([]float64{3, 4, 5})
+
+	matExpected := new(Matrix)
+	matExpected.AddRow([]float64{6, 6, 6})
+	matExpected.AddRow([]float64{12, 12, 12})
+
+	matAdd := mat1.Add(mat2)
+	if !matAdd.Equals(matExpected) {
+		t.Errorf("Incorrect matrices addition, want: %+v, got: %+v", matExpected, matAdd)
+	}
+}
