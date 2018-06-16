@@ -66,17 +66,17 @@ func (m *Matrix) Equals(m2 *Matrix) bool {
 }
 
 func (m *Matrix) Transpose() *Matrix {
-	ret := Matrix{}
+	ret := new(Matrix)
 
-	for j := 0; j < len(m.Data[0]); j++ {
-		col := make([]float64, 0, len(m.Data[j]))
-		for i := 0; i < len(m.Data); i++ {
-			col = append(col, m.Data[i][j])
+	for j := 0; j < m.GetNbCols(); j++ {
+		col := make([]float64, 0)
+		for i := 0; i < m.GetNbRows(); i++ {
+			col = append(col, m.At(i, j))
 		}
 		ret.AddRow(col)
 	}
 
-	return &ret
+	return ret
 }
 
 func (m1 *Matrix) Product(m2 *Matrix) *Matrix {

@@ -46,6 +46,26 @@ func TestTranspose(t *testing.T) {
 			}
 		}
 	}
+
+	// Second test - 1 row mat
+	mat = new(Matrix)
+	mat.AddRow([]float64{1, 2, 3})
+
+	matRes = new(Matrix)
+	matRes.AddRow([]float64{1})
+	matRes.AddRow([]float64{2})
+	matRes.AddRow([]float64{3})
+
+	matT := mat.Transpose()
+	if !matT.Equals(matRes) {
+		t.Errorf("Incorrect matrice transposition (1 row), want: %+v, got: %+v", matRes, matT)
+	}
+
+	// Thrid test - 1 col mat
+	matT = matRes.Transpose()
+	if !matT.Equals(mat) {
+		t.Errorf("Incorrect matrice transposition (1 col), want: %+v, got: %+v", mat, matT)
+	}
 }
 
 func TestGetRow(t *testing.T) {
