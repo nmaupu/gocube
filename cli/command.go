@@ -97,7 +97,7 @@ func test3D(cmd *cli.Cmd) {
 		ctx.SetHexColor("#000000")
 		ctx.SetLineWidth(1)
 
-		cube3d.DrawCube(ctx, 200, 200, c)
+		cube3d.DrawCube(ctx, 0, 0, c)
 
 		ctx.SavePNG("/tmp/out.png")
 	}
