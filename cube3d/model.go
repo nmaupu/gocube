@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	AngleOfView = 90
+	AngleOfView = 50
 	Near        = .1
 	Far         = 100.
 	CamX        = 0.
-	CamY        = 0.
-	CamZ        = -20.
+	CamY        = -40.
+	CamZ        = -80.
 )
 
 var (
@@ -79,7 +79,7 @@ func getRad(deg float64) float64 {
 	return (deg * math.Pi) / 180
 }
 
-func buildFace3d(cube *data.Cube, color string, radX, radY float64) []cubie3d {
+func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubie3d {
 	log.Printf("-- Building face %s", color)
 
 	face := cube.Faces[color]
@@ -99,7 +99,7 @@ func buildFace3d(cube *data.Cube, color string, radX, radY float64) []cubie3d {
 	// w=1 -> position in space
 	// w=0 -> direction
 	halfWidth := float64(cube.CubeSize) / 2. // i.e. For a 3x3, it's 1.5
-	toOrigMat := compute.NewVector4(-halfWidth, -halfWidth, -halfWidth, 0)
+	toOrigMat := compute.NewVector4(-halfWidth, -halfWidth, halfWidth, 0)
 	scale := 1. / halfWidth
 
 	log.Println("toOrigMat: ", toOrigMat)
@@ -121,7 +121,7 @@ func buildFace3d(cube *data.Cube, color string, radX, radY float64) []cubie3d {
 
 				c3d.Point = compute.NewVector4(x, y, z, 1)
 				c3d.DirRight = compute.NewVector4(1, 0, 0, 0)
-				c3d.DirDown = compute.NewVector4(0, 0, 1.0, 0)
+				c3d.DirDown = compute.NewVector4(0, 0, 1, 0)
 
 			case "green":
 				x := float64(j)
@@ -146,16 +146,17 @@ func buildFace3d(cube *data.Cube, color string, radX, radY float64) []cubie3d {
 			c3d.Point = GetTranslationMatrix(toOrigMat).Product(c3d.Point)
 			c3d.Point = GetScaleMatrix(scale, scale, scale).Product(c3d.Point)
 
-			log.Printf("Resulting point (before rotations) = %+v", c3d.Point)
-
 			c3d.Point = GetRotationMatrixX(radX).Product(c3d.Point)
 			c3d.Point = GetRotationMatrixY(radY).Product(c3d.Point)
+			c3d.Point = GetRotationMatrixZ(radZ).Product(c3d.Point)
 
 			c3d.DirRight = GetRotationMatrixX(radX).Product(c3d.DirRight).Normalize4()
 			c3d.DirRight = GetRotationMatrixY(radY).Product(c3d.DirRight).Normalize4()
+			c3d.DirRight = GetRotationMatrixZ(radZ).Product(c3d.DirRight).Normalize4()
 
 			c3d.DirDown = GetRotationMatrixX(radX).Product(c3d.DirDown).Normalize4()
 			c3d.DirDown = GetRotationMatrixY(radY).Product(c3d.DirDown).Normalize4()
+			c3d.DirDown = GetRotationMatrixZ(radZ).Product(c3d.DirDown).Normalize4()
 
 			ret = append(ret, c3d)
 		}
@@ -164,7 +165,7 @@ func buildFace3d(cube *data.Cube, color string, radX, radY float64) []cubie3d {
 	return ret
 }
 
-// Convert a point to the original 3D coordinates plan
+// Convert a point from real world 3D coordinates
 // to the drawing plan where Y is inverted
 // Real world scene: X(right), Y(top), Z(back)
 // Drawing plan / camera plan: X(right), Y(bottom), Z(front)
@@ -183,10 +184,11 @@ func ConvertToDrawingPlan(vec *compute.Matrix, imgWidth, imgHeight int) *compute
 		0,
 		1,
 	)
+	log.Printf("Point to draw : x=%3f, y=%3f -> %+v", x, y, m)
 	return m
 }
 
-func DrawCubie(ctx *gg.Context, x, y float64, c3d cubie3d) {
+func DrawCubie(ctx *gg.Context, c3d cubie3d) {
 	// Need to scale the translation vector by the size of one cubie in the real world coordinates
 	cubieScale := 1. / (float64(c3d.CubeSize) / 2.)
 
@@ -214,25 +216,25 @@ func DrawCubie(ctx *gg.Context, x, y float64, c3d cubie3d) {
 	p3 := ConvertToDrawingPlan(m3, ctx.Width(), ctx.Height())
 	p4 := ConvertToDrawingPlan(m4, ctx.Width(), ctx.Height())
 
-	ctx.SetLineWidth(6)
-	ctx.MoveTo(x+p1.At(0, 0), y+p1.At(1, 0))
-	ctx.LineTo(x+p2.At(0, 0), y+p2.At(1, 0))
-	ctx.LineTo(x+p3.At(0, 0), y+p3.At(1, 0))
-	ctx.LineTo(x+p4.At(0, 0), y+p4.At(1, 0))
-	ctx.LineTo(x+p1.At(0, 0), y+p1.At(1, 0))
+	ctx.SetLineWidth(4)
+	ctx.MoveTo(p1.At(0, 0), p1.At(1, 0))
+	ctx.LineTo(p2.At(0, 0), p2.At(1, 0))
+	ctx.LineTo(p3.At(0, 0), p3.At(1, 0))
+	ctx.LineTo(p4.At(0, 0), p4.At(1, 0))
+	ctx.LineTo(p1.At(0, 0), p1.At(1, 0))
 	ctx.SetHexColor(c3d.HexColor)
 	ctx.FillPreserve()
 	ctx.SetHexColor("#000000")
 	ctx.Stroke()
 }
 
-func DrawFace(ctx *gg.Context, x, y float64, c3ds []cubie3d) {
+func DrawFace(ctx *gg.Context, c3ds []cubie3d) {
 	for _, c3d := range c3ds {
-		DrawCubie(ctx, x, y, c3d)
+		DrawCubie(ctx, c3d)
 	}
 }
 
-func DrawAxes(ctx *gg.Context, x, y, width, radX, radY float64) *gg.Context {
+func DrawAxes(ctx *gg.Context, width, radX, radY, radZ float64) *gg.Context {
 	// Origins' points
 	poX := compute.NewVector4(0, 0, 0, 1)
 	poY := compute.NewVector4(0, 0, 0, 1)
@@ -248,30 +250,39 @@ func DrawAxes(ctx *gg.Context, x, y, width, radX, radY float64) *gg.Context {
 	rwArrowY1 := GetTranslationMatrix(compute.NewVector3(-arrowScale, -arrowScale, 0)).Product(rwAxisY)
 	rwArrowY2 := GetTranslationMatrix(compute.NewVector3(arrowScale, -arrowScale, 0)).Product(rwAxisY)
 
-	rwAxisZ := GetTranslationMatrix(compute.NewVector3(0, 0, -1)).Product(poZ)
-	rwArrowZ1 := GetTranslationMatrix(compute.NewVector3(-arrowScale, 0, arrowScale)).Product(rwAxisZ)
-	rwArrowZ2 := GetTranslationMatrix(compute.NewVector3(arrowScale, 0, arrowScale)).Product(rwAxisZ)
+	rwAxisZ := GetTranslationMatrix(compute.NewVector3(0, 0, 1)).Product(poZ)
+	rwArrowZ1 := GetTranslationMatrix(compute.NewVector3(-arrowScale, 0, -arrowScale)).Product(rwAxisZ)
+	rwArrowZ2 := GetTranslationMatrix(compute.NewVector3(arrowScale, 0, -arrowScale)).Product(rwAxisZ)
 
 	rwAxisX = GetRotationMatrixX(radX).Product(rwAxisX)
 	rwAxisX = GetRotationMatrixY(radY).Product(rwAxisX)
+	rwAxisX = GetRotationMatrixZ(radZ).Product(rwAxisX)
 	rwArrowX1 = GetRotationMatrixX(radX).Product(rwArrowX1)
 	rwArrowX1 = GetRotationMatrixY(radY).Product(rwArrowX1)
+	rwArrowX1 = GetRotationMatrixZ(radZ).Product(rwArrowX1)
 	rwArrowX2 = GetRotationMatrixX(radX).Product(rwArrowX2)
 	rwArrowX2 = GetRotationMatrixY(radY).Product(rwArrowX2)
+	rwArrowX2 = GetRotationMatrixZ(radZ).Product(rwArrowX2)
 
 	rwAxisY = GetRotationMatrixX(radX).Product(rwAxisY)
 	rwAxisY = GetRotationMatrixY(radY).Product(rwAxisY)
+	rwAxisY = GetRotationMatrixZ(radZ).Product(rwAxisY)
 	rwArrowY1 = GetRotationMatrixX(radX).Product(rwArrowY1)
 	rwArrowY1 = GetRotationMatrixY(radY).Product(rwArrowY1)
+	rwArrowY1 = GetRotationMatrixZ(radZ).Product(rwArrowY1)
 	rwArrowY2 = GetRotationMatrixX(radX).Product(rwArrowY2)
 	rwArrowY2 = GetRotationMatrixY(radY).Product(rwArrowY2)
+	rwArrowY2 = GetRotationMatrixZ(radZ).Product(rwArrowY2)
 
 	rwAxisZ = GetRotationMatrixX(radX).Product(rwAxisZ)
 	rwAxisZ = GetRotationMatrixY(radY).Product(rwAxisZ)
+	rwAxisZ = GetRotationMatrixZ(radZ).Product(rwAxisZ)
 	rwArrowZ1 = GetRotationMatrixX(radX).Product(rwArrowZ1)
 	rwArrowZ1 = GetRotationMatrixY(radY).Product(rwArrowZ1)
+	rwArrowZ1 = GetRotationMatrixZ(radZ).Product(rwArrowZ1)
 	rwArrowZ2 = GetRotationMatrixX(radX).Product(rwArrowZ2)
 	rwArrowZ2 = GetRotationMatrixY(radY).Product(rwArrowZ2)
+	rwArrowZ2 = GetRotationMatrixZ(radZ).Product(rwArrowZ2)
 
 	// Axis
 	defer func() {
@@ -312,7 +323,7 @@ func DrawAxes(ctx *gg.Context, x, y, width, radX, radY float64) *gg.Context {
 	ctx.Stroke()
 
 	ctx.SetHexColor("#0000FF")
-	ctx.DrawLine(origZ.At(0, 0), origZ.At(0, 0), aZ.At(0, 0), aZ.At(1, 0))
+	ctx.DrawLine(origZ.At(0, 0), origZ.At(1, 0), aZ.At(0, 0), aZ.At(1, 0))
 	ctx.DrawLine(aZ.At(0, 0), aZ.At(1, 0), arrZ1.At(0, 0), arrZ1.At(1, 0))
 	ctx.DrawLine(aZ.At(0, 0), aZ.At(1, 0), arrZ2.At(0, 0), arrZ2.At(1, 0))
 	ctx.Stroke()
@@ -382,22 +393,24 @@ func ProjectPoint(p *compute.Matrix) *compute.Matrix {
 	}
 }
 
-func DrawCube(ctx *gg.Context, x, y float64, cube *data.Cube) *gg.Context {
+func DrawCube(ctx *gg.Context, cube *data.Cube) *gg.Context {
 	var face3dMatrices []cubie3d
 
 	radX := getRad(35.264)
 	radY := -getRad(45)
+	radZ := getRad(22.5)
 	radX = 0
-	radY = 0
+	//radY = 0
+	radZ = 0
 
-	face3dMatrices = buildFace3d(cube, "white", radX, radY)
-	DrawFace(ctx, x, y, face3dMatrices)
-	face3dMatrices = buildFace3d(cube, "red", radX, radY)
-	DrawFace(ctx, x, y, face3dMatrices)
-	face3dMatrices = buildFace3d(cube, "green", radX, radY)
-	DrawFace(ctx, x, y, face3dMatrices)
+	face3dMatrices = buildFace3d(cube, "white", radX, radY, radZ)
+	DrawFace(ctx, face3dMatrices)
+	face3dMatrices = buildFace3d(cube, "red", radX, radY, radZ)
+	DrawFace(ctx, face3dMatrices)
+	face3dMatrices = buildFace3d(cube, "green", radX, radY, radZ)
+	DrawFace(ctx, face3dMatrices)
 
-	DrawAxes(ctx, x, y, 10, radX, radY)
+	DrawAxes(ctx, 8, radX, radY, radZ)
 
 	return ctx
 }
