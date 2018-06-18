@@ -7,6 +7,8 @@ import (
 	"github.com/nmaupu/gocube/compute"
 	"github.com/nmaupu/gocube/cube3d"
 	"github.com/nmaupu/gocube/data"
+	"image"
+	"image/png"
 	"os"
 )
 
@@ -93,7 +95,8 @@ func test3D(cmd *cli.Cmd) {
 		//fmt.Println(alg)
 		c.Execute(data.NewAlg("U' B' D2 L2 F2 R2 U B' L2 B' U B' D F2 U2 D2 B D U R2"))
 
-		ctx := gg.NewContext(1000, 1000)
+		imgDim := 700
+		ctx := gg.NewContext(imgDim, imgDim)
 		ctx.SetHexColor("#FFFFFF")
 		ctx.Clear()
 		ctx.SetHexColor("#000000")
@@ -102,5 +105,70 @@ func test3D(cmd *cli.Cmd) {
 		cube3d.DrawCube(ctx, c)
 
 		ctx.SavePNG(*output)
+
+		cropImage(*output)
 	}
+}
+
+func cropImage(in string) error {
+	f, _ := os.Open(in)
+	img, _, _ := image.Decode(f)
+
+	// Store all non alpha coords
+	xs := make([]int, 0)
+	ys := make([]int, 0)
+
+	b := img.Bounds()
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			px := img.At(x, y)
+			r, g, b, _ := px.RGBA()
+			if r != 65535 && g != 65535 && b != 65535 {
+				xs = append(xs, x)
+				ys = append(ys, y)
+			}
+		}
+	}
+
+	xL, _ := getMin(xs, ys)
+	xR, _ := getMax(xs, ys)
+	yU, _ := getMin(ys, xs)
+	yD, _ := getMax(ys, xs)
+
+	fso, err := os.Create("/tmp/test.png")
+	if err != nil {
+		return err
+	}
+	defer fso.Close()
+
+	croppedimg := img.(interface {
+		SubImage(r image.Rectangle) image.Image
+	}).SubImage(image.Rect(xL, yU, xR, yD))
+
+	return png.Encode(fso, croppedimg)
+}
+
+func getMin(xs, ys []int) (int, int) {
+	min := 100000000
+	y := 0
+	for k, v := range xs {
+		if v < min {
+			min = v
+			y = ys[k]
+		}
+	}
+
+	return min, y
+}
+func getMax(xs, ys []int) (int, int) {
+	max := 0
+	y := 0
+	for k, v := range xs {
+		if v > max {
+			max = v
+			y = ys[k]
+		}
+	}
+
+	return max, y
 }

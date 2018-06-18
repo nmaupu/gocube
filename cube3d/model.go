@@ -56,6 +56,11 @@ func GetRotationMatrixZ(rad float64) *compute.Matrix {
 	m.AddRow([]float64{0, 0, 0, 1})
 	return m
 }
+func GetRotationMatrixXYZ(radX, radY, radZ float64) *compute.Matrix {
+	return GetRotationMatrixX(radX).
+		Product(GetRotationMatrixY(radY)).
+		Product(GetRotationMatrixZ(radZ))
+}
 
 func GetTranslationMatrix(vec *compute.Matrix) *compute.Matrix {
 	m := new(compute.Matrix)
@@ -143,7 +148,7 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 			c3d.Point = GetTranslationMatrix(toOrigMat).Product(c3d.Point)
 			c3d.Point = GetScaleMatrix(scale, scale, scale).Product(c3d.Point)
 
-			rotMat := GetRotationMatrixX(radX).Product(GetRotationMatrixY(radY)).Product(GetRotationMatrixZ(radZ))
+			rotMat := GetRotationMatrixXYZ(radX, radY, radZ)
 			c3d.Point = rotMat.Product(c3d.Point)
 
 			c3d.DirRight = rotMat.Product(c3d.DirRight)
@@ -157,16 +162,13 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 }
 
 // Convert a point from real world 3D coordinates
-// to the drawing plan where Y is inverted
-// Real world scene: X(right), Y(top), Z(back)
-// Drawing plan / camera plan: X(right), Y(bottom), Z(front)
+// to the drawing plan
 // Returns a 4D position vector (w=1), this is not really needed, it's done just by convention
 func ConvertToDrawingPlan(vec *compute.Matrix, imgWidth, imgHeight int) *compute.Matrix {
 	if vec.GetNbRows() != 4 && vec.GetNbCols() != 1 {
 		panic("Parameter is not a 4D vector")
 	}
 
-	// Y and Z axis are inverted
 	x := vec.At(0, 0)
 	y := vec.At(1, 0)
 	m := compute.NewVector4(
@@ -179,12 +181,12 @@ func ConvertToDrawingPlan(vec *compute.Matrix, imgWidth, imgHeight int) *compute
 	return m
 }
 
-func GetLineWidth(cubeDim int) float64 {
+func GetLineWidth(cubeDim, imgWidth int) float64 {
 	// Using this function
 	// y=2^(-.1*x)*c
-	// c=8 seems to display good results for small cubes
+	// c = 1/100 image seems to be good enough
 	// As a result, the more x increase, the less the line are thick but never reach 0
-	return math.Pow(2, -.1*float64(cubeDim)) * 8
+	return math.Pow(2, -.1*float64(cubeDim)) * (float64(imgWidth) / 100.)
 }
 
 func DrawCubie(ctx *gg.Context, c3d cubie3d) {
@@ -211,7 +213,7 @@ func DrawCubie(ctx *gg.Context, c3d cubie3d) {
 	p3 := ConvertToDrawingPlan(m3, ctx.Width(), ctx.Height())
 	p4 := ConvertToDrawingPlan(m4, ctx.Width(), ctx.Height())
 
-	ctx.SetLineWidth(GetLineWidth(c3d.CubeSize))
+	ctx.SetLineWidth(GetLineWidth(c3d.CubeSize, ctx.Width()))
 	ctx.MoveTo(p1.At(0, 0), p1.At(1, 0))
 	ctx.LineTo(p2.At(0, 0), p2.At(1, 0))
 	ctx.LineTo(p3.At(0, 0), p3.At(1, 0))
@@ -250,7 +252,7 @@ func DrawAxes(ctx *gg.Context, width, radX, radY, radZ float64) *gg.Context {
 	rwArrowZ2 := GetTranslationMatrix(compute.NewVector3(arrowScale, 0, -arrowScale)).Product(rwAxisZ)
 
 	// Rotations
-	rotMat := GetRotationMatrixX(radX).Product(GetRotationMatrixY(radY)).Product(GetRotationMatrixZ(radZ))
+	rotMat := GetRotationMatrixXYZ(radX, radY, radZ)
 
 	rwAxisX = rotMat.Product(rwAxisX)
 	rwArrowX1 = rotMat.Product(rwArrowX1)
@@ -323,7 +325,7 @@ func GetProjectionMatrix(angleOfView, n, f float64) *compute.Matrix {
 	scaleTan := math.Tan(radFov * .5)
 	ret.AddRow([]float64{1 / (aspect * scaleTan), 0, 0, 0})
 	ret.AddRow([]float64{0, 1 / scaleTan, 0, 0})
-	ret.AddRow([]float64{0, 0, -((f + n) / (f - n)), -2 * f * n / (n - f)})
+	ret.AddRow([]float64{0, 0, -(f + n) / (f - n), -2 * f * n / (f - n)})
 	ret.AddRow([]float64{0, 0, -1, 0})
 
 	return ret
@@ -372,7 +374,7 @@ func ProjectPoint(p *compute.Matrix) *compute.Matrix {
 func DrawCube(ctx *gg.Context, cube *data.Cube) *gg.Context {
 	var face3dMatrices []cubie3d
 
-	radX := getRad(35.264)
+	radX := getRad(34)
 	radY := -getRad(45)
 	radZ := 0.
 
