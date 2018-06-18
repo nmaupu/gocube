@@ -15,7 +15,7 @@ const (
 	Far         = 100.
 	CamX        = 0.
 	CamY        = 0.
-	CamZ        = -20.
+	CamZ        = -6.
 )
 
 var (
@@ -80,7 +80,7 @@ func getRad(deg float64) float64 {
 }
 
 func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubie3d {
-	log.Printf("-- Building face %s", color)
+	log.Printf("Building face %s", color)
 
 	face := cube.Faces[color]
 	ret := make([]cubie3d, 0)
@@ -101,9 +101,6 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 	halfWidth := float64(cube.CubeSize) / 2. // i.e. For a 3x3, it's 1.5
 	toOrigMat := compute.NewVector4(-halfWidth, -halfWidth, halfWidth, 0)
 	scale := 1. / halfWidth
-
-	log.Println("toOrigMat: ", toOrigMat)
-	log.Println("scale: ", scale)
 
 	for i := 0; i < len(face.Colors); i++ {
 		for j := 0; j < len(face.Colors[i]); j++ {
@@ -146,17 +143,11 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 			c3d.Point = GetTranslationMatrix(toOrigMat).Product(c3d.Point)
 			c3d.Point = GetScaleMatrix(scale, scale, scale).Product(c3d.Point)
 
-			c3d.Point = GetRotationMatrixX(radX).Product(c3d.Point)
-			c3d.Point = GetRotationMatrixY(radY).Product(c3d.Point)
-			c3d.Point = GetRotationMatrixZ(radZ).Product(c3d.Point)
+			rotMat := GetRotationMatrixX(radX).Product(GetRotationMatrixY(radY)).Product(GetRotationMatrixZ(radZ))
+			c3d.Point = rotMat.Product(c3d.Point)
 
-			c3d.DirRight = GetRotationMatrixX(radX).Product(c3d.DirRight).Normalize4()
-			c3d.DirRight = GetRotationMatrixY(radY).Product(c3d.DirRight).Normalize4()
-			c3d.DirRight = GetRotationMatrixZ(radZ).Product(c3d.DirRight).Normalize4()
-
-			c3d.DirDown = GetRotationMatrixX(radX).Product(c3d.DirDown).Normalize4()
-			c3d.DirDown = GetRotationMatrixY(radY).Product(c3d.DirDown).Normalize4()
-			c3d.DirDown = GetRotationMatrixZ(radZ).Product(c3d.DirDown).Normalize4()
+			c3d.DirRight = rotMat.Product(c3d.DirRight)
+			c3d.DirDown = rotMat.Product(c3d.DirDown)
 
 			ret = append(ret, c3d)
 		}
@@ -184,39 +175,43 @@ func ConvertToDrawingPlan(vec *compute.Matrix, imgWidth, imgHeight int) *compute
 		0,
 		1,
 	)
-	log.Printf("Point to draw : x=%3f, y=%3f -> %+v", x, y, m)
+
 	return m
 }
 
+func GetLineWidth(cubeDim int) float64 {
+	// Using this function
+	// y=2^(-.1*x)*c
+	// c=8 seems to display good results for small cubes
+	// As a result, the more x increase, the less the line are thick but never reach 0
+	return math.Pow(2, -.1*float64(cubeDim)) * 8
+}
+
 func DrawCubie(ctx *gg.Context, c3d cubie3d) {
-	// Need to scale the translation vector by the size of one cubie in the real world coordinates
-	cubieScale := 1. / (float64(c3d.CubeSize) / 2.)
+	// There are nb of cubies between [-1,1], 2 units
+	vecScale := 2. / float64(c3d.CubeSize)
 
 	m1 := c3d.Point
-	m2 := GetTranslationMatrix(c3d.DirRight.ScalarMultiply(cubieScale)).Product(m1)
-	m3 := GetTranslationMatrix(c3d.DirDown.ScalarMultiply(cubieScale)).Product(m2)
-	m4 := GetTranslationMatrix(c3d.DirDown.ScalarMultiply(cubieScale)).Product(m1)
+	m2 := GetTranslationMatrix(c3d.DirRight.ScalarMultiply(vecScale)).Product(m1)
+	m3 := GetTranslationMatrix(c3d.DirDown.ScalarMultiply(vecScale)).Product(m2)
+	m4 := GetTranslationMatrix(c3d.DirDown.ScalarMultiply(vecScale)).Product(m1)
 
-	// Real scale
-	s := c3d.CubieSize
-	scaleMat := GetScaleMatrix(s, s, s)
-
-	// Scale and convert to drawing plan
+	// Convert to drawing plan
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println(r)
 		}
 	}()
-	m1 = ProjectPoint(scaleMat.Product(m1))
-	m2 = ProjectPoint(scaleMat.Product(m2))
-	m3 = ProjectPoint(scaleMat.Product(m3))
-	m4 = ProjectPoint(scaleMat.Product(m4))
+	m1 = ProjectPoint(m1)
+	m2 = ProjectPoint(m2)
+	m3 = ProjectPoint(m3)
+	m4 = ProjectPoint(m4)
 	p1 := ConvertToDrawingPlan(m1, ctx.Width(), ctx.Height())
 	p2 := ConvertToDrawingPlan(m2, ctx.Width(), ctx.Height())
 	p3 := ConvertToDrawingPlan(m3, ctx.Width(), ctx.Height())
 	p4 := ConvertToDrawingPlan(m4, ctx.Width(), ctx.Height())
 
-	ctx.SetLineWidth(4)
+	ctx.SetLineWidth(GetLineWidth(c3d.CubeSize))
 	ctx.MoveTo(p1.At(0, 0), p1.At(1, 0))
 	ctx.LineTo(p2.At(0, 0), p2.At(1, 0))
 	ctx.LineTo(p3.At(0, 0), p3.At(1, 0))
@@ -364,10 +359,6 @@ func ProjectPoint(p *compute.Matrix) *compute.Matrix {
 	ret := MultPointMatrix(Cam, p)
 	ret = MultPointMatrix(Mproj, ret)
 
-	log.Printf("Projecting point is : %+v", ret)
-
-	return ret
-
 	// x and y must be in [-1,1] to be rendered
 	x := ret.At(0, 0)
 	y := ret.At(1, 0)
@@ -381,10 +372,8 @@ func ProjectPoint(p *compute.Matrix) *compute.Matrix {
 func DrawCube(ctx *gg.Context, cube *data.Cube) *gg.Context {
 	var face3dMatrices []cubie3d
 
-	radX := getRad(45)
+	radX := getRad(35.264)
 	radY := -getRad(45)
-	//radX = 0
-	//radY = 0
 	radZ := 0.
 
 	face3dMatrices = buildFace3d(cube, "white", radX, radY, radZ)
@@ -394,7 +383,7 @@ func DrawCube(ctx *gg.Context, cube *data.Cube) *gg.Context {
 	face3dMatrices = buildFace3d(cube, "green", radX, radY, radZ)
 	DrawFace(ctx, face3dMatrices)
 
-	DrawAxes(ctx, 8, radX, radY, radZ)
+	//DrawAxes(ctx, 4, radX, radY, radZ)
 
 	return ctx
 }

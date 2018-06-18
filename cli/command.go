@@ -84,6 +84,8 @@ func generate(cmd *cli.Cmd) {
 }
 
 func test3D(cmd *cli.Cmd) {
+	output := cmd.StringOpt("o output", "/tmp/out.png", "Output file name")
+
 	cmd.Action = func() {
 		c := data.NewCube(*size, float64(*cubieSize))
 		//g := compute.NewGenerator()
@@ -99,6 +101,6 @@ func test3D(cmd *cli.Cmd) {
 
 		cube3d.DrawCube(ctx, c)
 
-		ctx.SavePNG("/tmp/out.png")
+		ctx.SavePNG(*output)
 	}
 }
