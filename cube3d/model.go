@@ -9,8 +9,22 @@ import (
 	"math"
 )
 
+/**
+ * 3D calculations are based on:
+ * x axis going to the right
+ * y axis going up
+ * z axis going backwards
+ * Matrices computation are using column
+ * [1 0 0 0]   [x]
+ * |0 1 0 0|   |y|
+ * |0 0 1 0| x |z|
+ * [0 0 0 1]   [w]
+ * So matrices may have to be transposed from what's available online.
+ * This is the same conventions used by OpenGL for matrix calculations.
+ */
+
 const (
-	AngleOfView = 60
+	AngleOfView = 60 // FOV
 	Near        = .1
 	Far         = 100.
 	CamX        = 0.
@@ -24,12 +38,11 @@ var (
 )
 
 type cubie3d struct {
-	Point     *compute.Matrix
-	HexColor  string
-	CubieSize float64
-	CubeSize  int
-	DirRight  *compute.Matrix
-	DirDown   *compute.Matrix
+	Point    *compute.Matrix
+	HexColor string
+	CubeSize int
+	DirRight *compute.Matrix
+	DirDown  *compute.Matrix
 }
 
 func GetRotationMatrixX(rad float64) *compute.Matrix {
@@ -87,6 +100,7 @@ func getRad(deg float64) float64 {
 func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubie3d {
 	log.Printf("Building face %s", color)
 
+	var x, y, z float64
 	face := cube.Faces[color]
 	ret := make([]cubie3d, 0)
 
@@ -98,61 +112,67 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 	// So for a 3X3, all coordinates will be in [-1.5,1.5]
 	// We need to get that between [-1,1] and centered.
 	// As a result, we will be translating the cube according to the number of cubies divided by 2 (dim/2)
-	// And we will be scaling everything by 1/(dim/2) so all points will be included in [-1,1]
+	// and we will be scaling everything by 1/(dim/2) so all points will be included in [-1,1]
 
 	// Note about 4x4 matrices
 	// w=1 -> position in space
 	// w=0 -> direction
 	halfWidth := float64(cube.CubeSize) / 2. // i.e. For a 3x3, it's 1.5
-	toOrigMat := compute.NewVector4(-halfWidth, -halfWidth, halfWidth, 0)
+	// Reminder: Z axis is going backwards, that's why Z is positive ;)
+	toOrigMat := GetTranslationMatrix(compute.NewVector4(-halfWidth, -halfWidth, halfWidth, 0))
 	scale := 1. / halfWidth
+	scaleMat := GetScaleMatrix(scale, scale, scale)
+	rotationMat := GetRotationMatrixXYZ(radX, radY, radZ)
 
 	for i := 0; i < len(face.Colors); i++ {
 		for j := 0; j < len(face.Colors[i]); j++ {
 			c3d := cubie3d{
-				HexColor:  face.Colors[i][j].HexColor,
-				CubieSize: cube.CubieSize,
-				CubeSize:  cube.CubeSize,
+				HexColor: face.Colors[i][j].HexColor,
+				CubeSize: cube.CubeSize,
 			}
 
+			// According to cube implementation, when rotating faces, "white" face is always on top, "green" on front.
+			// Faces are indexed by name "white" and "green" (it's a map)
+			// So if doing a x move, white will display in fact green face
+			// As a result, we only need to display 3 faces: white, green and red for 3D
+			// If one needs to display other faces, just set up the cube using x,y or z moves.
 			switch color {
 			case "white":
-				x := float64(j)
-				y := float64(cube.CubeSize)
-				z := -float64(cube.CubeSize) + float64(i)
+				x = float64(j)
+				y = float64(cube.CubeSize)
+				z = -float64(cube.CubeSize) + float64(i)
 
-				c3d.Point = compute.NewVector4(x, y, z, 1)
 				c3d.DirRight = compute.NewVector4(1, 0, 0, 0)
 				c3d.DirDown = compute.NewVector4(0, 0, 1, 0)
 
 			case "green":
-				x := float64(j)
-				y := float64(cube.CubeSize) - float64(i)
-				z := 0.
+				x = float64(j)
+				y = float64(cube.CubeSize) - float64(i)
+				z = 0.
 
-				c3d.Point = compute.NewVector4(x, y, z, 1)
 				c3d.DirRight = compute.NewVector4(1, 0, 0, 0)
 				c3d.DirDown = compute.NewVector4(0, -1, 0, 0)
 
 			case "red":
-				x := float64(cube.CubeSize)
-				y := float64(cube.CubeSize) - float64(i)
-				z := -float64(j)
+				x = float64(cube.CubeSize)
+				y = float64(cube.CubeSize) - float64(i)
+				z = -float64(j)
 
-				c3d.Point = compute.NewVector4(x, y, z, 1)
 				c3d.DirRight = compute.NewVector4(0, 0, -1, 0)
 				c3d.DirDown = compute.NewVector4(0, -1, 0, 0)
+			default:
+				panic(fmt.Sprintf("%s color is not implemented!", color))
 			}
 
-			// Center the cube coordinates around origin
-			c3d.Point = GetTranslationMatrix(toOrigMat).Product(c3d.Point)
-			c3d.Point = GetScaleMatrix(scale, scale, scale).Product(c3d.Point)
+			// Center the computed coords around origin, scale it and rotate according to params
+			c3d.Point = rotationMat.Product(
+				scaleMat.Product(
+					toOrigMat.Product(
+						compute.NewVector4(x, y, z, 1))))
 
-			rotMat := GetRotationMatrixXYZ(radX, radY, radZ)
-			c3d.Point = rotMat.Product(c3d.Point)
-
-			c3d.DirRight = rotMat.Product(c3d.DirRight)
-			c3d.DirDown = rotMat.Product(c3d.DirDown)
+			// Also rotate "cubie building vectors" according to params
+			c3d.DirRight = rotationMat.Product(c3d.DirRight)
+			c3d.DirDown = rotationMat.Product(c3d.DirDown)
 
 			ret = append(ret, c3d)
 		}
