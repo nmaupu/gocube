@@ -2,13 +2,10 @@ package cli
 
 import (
 	"fmt"
-	"github.com/fogleman/gg"
 	"github.com/jawher/mow.cli"
 	"github.com/nmaupu/gocube/compute"
-	"github.com/nmaupu/gocube/cube3d"
 	"github.com/nmaupu/gocube/data"
-	"image"
-	"image/png"
+	"github.com/nmaupu/gocube/image"
 	"os"
 )
 
@@ -32,7 +29,6 @@ func Process(appName, appDesc, appVersion string) {
 	app.Command("reverse", "Reverse the given algorithm", reverse)
 	app.Command("generate", "Generate algs", generate)
 	app.Command("exportPDF", "Export as a PDF", exportPDF)
-	app.Command("test3D", "Test 3D", test3D)
 
 	app.Action = func() {
 		c := data.NewCube(*size, float64(*cubieSize))
@@ -95,80 +91,9 @@ func test3D(cmd *cli.Cmd) {
 		//fmt.Println(alg)
 		c.Execute(data.NewAlg("U' B' D2 L2 F2 R2 U B' L2 B' U B' D F2 U2 D2 B D U R2"))
 
-		imgDim := 700
-		ctx := gg.NewContext(imgDim, imgDim)
-		ctx.SetHexColor("#FFFFFF")
-		ctx.Clear()
-		ctx.SetHexColor("#000000")
-		ctx.SetLineWidth(1)
-
-		cube3d.DrawCube(ctx, c)
-
+		imgDim := 500
+		ctx := c.Draw3d(imgDim)
+		ctx, _ = image.TrimImageWhite(ctx)
 		ctx.SavePNG(*output)
-
-		cropImage(*output)
 	}
-}
-
-func cropImage(in string) error {
-	f, _ := os.Open(in)
-	img, _, _ := image.Decode(f)
-
-	// Store all non alpha coords
-	xs := make([]int, 0)
-	ys := make([]int, 0)
-
-	b := img.Bounds()
-	for y := b.Min.Y; y < b.Max.Y; y++ {
-		for x := b.Min.X; x < b.Max.X; x++ {
-			px := img.At(x, y)
-			r, g, b, _ := px.RGBA()
-			if r != 65535 && g != 65535 && b != 65535 {
-				xs = append(xs, x)
-				ys = append(ys, y)
-			}
-		}
-	}
-
-	xL, _ := getMin(xs, ys)
-	xR, _ := getMax(xs, ys)
-	yU, _ := getMin(ys, xs)
-	yD, _ := getMax(ys, xs)
-
-	fso, err := os.Create("/tmp/test.png")
-	if err != nil {
-		return err
-	}
-	defer fso.Close()
-
-	croppedimg := img.(interface {
-		SubImage(r image.Rectangle) image.Image
-	}).SubImage(image.Rect(xL, yU, xR, yD))
-
-	return png.Encode(fso, croppedimg)
-}
-
-func getMin(xs, ys []int) (int, int) {
-	min := 100000000
-	y := 0
-	for k, v := range xs {
-		if v < min {
-			min = v
-			y = ys[k]
-		}
-	}
-
-	return min, y
-}
-func getMax(xs, ys []int) (int, int) {
-	max := 0
-	y := 0
-	for k, v := range xs {
-		if v > max {
-			max = v
-			y = ys[k]
-		}
-	}
-
-	return max, y
 }

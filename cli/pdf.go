@@ -6,6 +6,7 @@ import (
 	"github.com/jawher/mow.cli"
 	"github.com/nmaupu/gocube/config"
 	"github.com/nmaupu/gocube/data"
+	"github.com/nmaupu/gocube/image"
 	"github.com/signintech/gopdf"
 	"io/ioutil"
 	"log"
@@ -35,7 +36,8 @@ const (
 	CellPaddingBottom        = 10.0
 	CellPaddingLeft          = 5.0
 	ImgWidthPtFull           = 110.0
-	ImgWidthPTop             = 80.0
+	ImgWidthPtTop            = 80.0
+	ImgWidthPt3d             = 80.0
 	ImgPaddingRight          = 10.0
 
 	FontFileName     = "ttf/rockwell.ttf"
@@ -100,13 +102,18 @@ func exportPDF(cmd *cli.Cmd) {
 				c.Execute(postAlg)
 
 				var imgWidthPt float64
-				if draw.View == "top" {
+				switch draw.View {
+				case "top":
 					ctx = c.DrawTopView("white")
-					imgWidthPt = ImgWidthPTop
-				} else if draw.View == "full" {
+					imgWidthPt = ImgWidthPtTop
+				case "full":
 					ctx = c.Draw()
 					imgWidthPt = ImgWidthPtFull
-				} else {
+				case "3d":
+					ctx = c.Draw3d(600)
+					imgWidthPt = ImgWidthPt3d
+					ctx, _ = image.TrimImageWhite(ctx)
+				default:
 					panic(fmt.Sprintf("Incorrect view, %s", draw.View))
 				}
 

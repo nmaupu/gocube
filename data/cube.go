@@ -240,6 +240,17 @@ func (c *Cube) DrawTopView(faceColor string) *gg.Context {
 	return ctx
 }
 
+func (c *Cube) Draw3d(imgDim int) *gg.Context {
+	ctx := gg.NewContext(imgDim, imgDim)
+	ctx.SetHexColor("#FFFFFF")
+	ctx.Clear()
+	ctx.SetHexColor("#000000")
+
+	drawCube3d(ctx, c)
+
+	return ctx
+}
+
 func (c *Cube) R() *Cube {
 	colIndex := c.CubeSize - 1
 	whiteCopy := *(c.Faces["white"].Copy())

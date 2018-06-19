@@ -1,10 +1,9 @@
-package cube3d
+package data
 
 import (
 	"fmt"
 	"github.com/fogleman/gg"
-	"github.com/nmaupu/gocube/compute"
-	"github.com/nmaupu/gocube/data"
+	"github.com/nmaupu/gocube/math3D"
 	"log"
 	"math"
 )
@@ -33,50 +32,50 @@ const (
 )
 
 var (
-	Mproj = GetProjectionMatrix(AngleOfView, Near, Far)
-	Cam   = GetCameraTranslation(CamX, CamY, CamZ)
+	Mproj = getProjectionMatrix(AngleOfView, Near, Far)
+	Cam   = getCameraTranslation(CamX, CamY, CamZ)
 )
 
 type cubie3d struct {
-	Point    *compute.Matrix
+	Point    *math3D.Matrix
 	HexColor string
 	CubeSize int
-	DirRight *compute.Matrix
-	DirDown  *compute.Matrix
+	DirRight *math3D.Matrix
+	DirDown  *math3D.Matrix
 }
 
-func GetRotationMatrixX(rad float64) *compute.Matrix {
-	m := new(compute.Matrix)
+func getRotationMatrixX(rad float64) *math3D.Matrix {
+	m := new(math3D.Matrix)
 	m.AddRow([]float64{1, 0, 0, 0})
 	m.AddRow([]float64{0, math.Cos(rad), -math.Sin(rad), 0})
 	m.AddRow([]float64{0, math.Sin(rad), math.Cos(rad), 0})
 	m.AddRow([]float64{0, 0, 0, 1})
 	return m
 }
-func GetRotationMatrixY(rad float64) *compute.Matrix {
-	m := new(compute.Matrix)
+func getRotationMatrixY(rad float64) *math3D.Matrix {
+	m := new(math3D.Matrix)
 	m.AddRow([]float64{math.Cos(rad), 0, math.Sin(rad), 0})
 	m.AddRow([]float64{0, 1, 0, 0})
 	m.AddRow([]float64{-math.Sin(rad), 0, math.Cos(rad), 0})
 	m.AddRow([]float64{0, 0, 0, 1})
 	return m
 }
-func GetRotationMatrixZ(rad float64) *compute.Matrix {
-	m := new(compute.Matrix)
+func getRotationMatrixZ(rad float64) *math3D.Matrix {
+	m := new(math3D.Matrix)
 	m.AddRow([]float64{math.Cos(rad), -math.Sin(rad), 0, 0})
 	m.AddRow([]float64{math.Sin(rad), math.Cos(rad), 0, 0})
 	m.AddRow([]float64{0, 0, 1, 0})
 	m.AddRow([]float64{0, 0, 0, 1})
 	return m
 }
-func GetRotationMatrixXYZ(radX, radY, radZ float64) *compute.Matrix {
-	return GetRotationMatrixX(radX).
-		Product(GetRotationMatrixY(radY)).
-		Product(GetRotationMatrixZ(radZ))
+func getRotationMatrixXYZ(radX, radY, radZ float64) *math3D.Matrix {
+	return getRotationMatrixX(radX).
+		Product(getRotationMatrixY(radY)).
+		Product(getRotationMatrixZ(radZ))
 }
 
-func GetTranslationMatrix(vec *compute.Matrix) *compute.Matrix {
-	m := new(compute.Matrix)
+func getTranslationMatrix(vec *math3D.Matrix) *math3D.Matrix {
+	m := new(math3D.Matrix)
 	m.AddRow([]float64{1, 0, 0, vec.At(0, 0)})
 	m.AddRow([]float64{0, 1, 0, vec.At(1, 0)})
 	m.AddRow([]float64{0, 0, 1, vec.At(2, 0)})
@@ -84,8 +83,8 @@ func GetTranslationMatrix(vec *compute.Matrix) *compute.Matrix {
 	return m
 }
 
-func GetScaleMatrix(x, y, z float64) *compute.Matrix {
-	m := new(compute.Matrix)
+func getScaleMatrix(x, y, z float64) *math3D.Matrix {
+	m := new(math3D.Matrix)
 	m.AddRow([]float64{x, 0, 0, 0})
 	m.AddRow([]float64{0, y, 0, 0})
 	m.AddRow([]float64{0, 0, z, 0})
@@ -97,7 +96,7 @@ func getRad(deg float64) float64 {
 	return (deg * math.Pi) / 180
 }
 
-func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubie3d {
+func buildFace3d(cube *Cube, color string, radX, radY, radZ float64) []cubie3d {
 	log.Printf("Building face %s", color)
 
 	var x, y, z float64
@@ -119,10 +118,10 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 	// w=0 -> direction
 	halfWidth := float64(cube.CubeSize) / 2. // i.e. For a 3x3, it's 1.5
 	// Reminder: Z axis is going backwards, that's why Z is positive ;)
-	toOrigMat := GetTranslationMatrix(compute.NewVector4(-halfWidth, -halfWidth, halfWidth, 0))
+	toOrigMat := getTranslationMatrix(math3D.NewVector4(-halfWidth, -halfWidth, halfWidth, 0))
 	scale := 1. / halfWidth
-	scaleMat := GetScaleMatrix(scale, scale, scale)
-	rotationMat := GetRotationMatrixXYZ(radX, radY, radZ)
+	scaleMat := getScaleMatrix(scale, scale, scale)
+	rotationMat := getRotationMatrixXYZ(radX, radY, radZ)
 
 	for i := 0; i < len(face.Colors); i++ {
 		for j := 0; j < len(face.Colors[i]); j++ {
@@ -142,24 +141,24 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 				y = float64(cube.CubeSize)
 				z = -float64(cube.CubeSize) + float64(i)
 
-				c3d.DirRight = compute.NewVector4(1, 0, 0, 0)
-				c3d.DirDown = compute.NewVector4(0, 0, 1, 0)
+				c3d.DirRight = math3D.NewVector4(1, 0, 0, 0)
+				c3d.DirDown = math3D.NewVector4(0, 0, 1, 0)
 
 			case "green":
 				x = float64(j)
 				y = float64(cube.CubeSize) - float64(i)
 				z = 0.
 
-				c3d.DirRight = compute.NewVector4(1, 0, 0, 0)
-				c3d.DirDown = compute.NewVector4(0, -1, 0, 0)
+				c3d.DirRight = math3D.NewVector4(1, 0, 0, 0)
+				c3d.DirDown = math3D.NewVector4(0, -1, 0, 0)
 
 			case "red":
 				x = float64(cube.CubeSize)
 				y = float64(cube.CubeSize) - float64(i)
 				z = -float64(j)
 
-				c3d.DirRight = compute.NewVector4(0, 0, -1, 0)
-				c3d.DirDown = compute.NewVector4(0, -1, 0, 0)
+				c3d.DirRight = math3D.NewVector4(0, 0, -1, 0)
+				c3d.DirDown = math3D.NewVector4(0, -1, 0, 0)
 			default:
 				panic(fmt.Sprintf("%s color is not implemented!", color))
 			}
@@ -168,7 +167,7 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 			c3d.Point = rotationMat.Product(
 				scaleMat.Product(
 					toOrigMat.Product(
-						compute.NewVector4(x, y, z, 1))))
+						math3D.NewVector4(x, y, z, 1))))
 
 			// Also rotate "cubie building vectors" according to params
 			c3d.DirRight = rotationMat.Product(c3d.DirRight)
@@ -184,14 +183,14 @@ func buildFace3d(cube *data.Cube, color string, radX, radY, radZ float64) []cubi
 // Convert a point from real world 3D coordinates
 // to the drawing plan
 // Returns a 4D position vector (w=1), this is not really needed, it's done just by convention
-func ConvertToDrawingPlan(vec *compute.Matrix, imgWidth, imgHeight int) *compute.Matrix {
+func convertToDrawingPlan(vec *math3D.Matrix, imgWidth, imgHeight int) *math3D.Matrix {
 	if vec.GetNbRows() != 4 && vec.GetNbCols() != 1 {
 		panic("Parameter is not a 4D vector")
 	}
 
 	x := vec.At(0, 0)
 	y := vec.At(1, 0)
-	m := compute.NewVector4(
+	m := math3D.NewVector4(
 		(x+1)*.5*float64(imgWidth),
 		(1-(y+1)*.5)*float64(imgHeight),
 		0,
@@ -201,7 +200,7 @@ func ConvertToDrawingPlan(vec *compute.Matrix, imgWidth, imgHeight int) *compute
 	return m
 }
 
-func GetLineWidth(cubeDim, imgWidth int) float64 {
+func getLineWidth(cubeDim, imgWidth int) float64 {
 	// Using this function
 	// y=2^(-.1*x)*c
 	// c = 1/100 image seems to be good enough
@@ -209,14 +208,14 @@ func GetLineWidth(cubeDim, imgWidth int) float64 {
 	return math.Pow(2, -.1*float64(cubeDim)) * (float64(imgWidth) / 100.)
 }
 
-func DrawCubie(ctx *gg.Context, c3d cubie3d) {
+func drawCubie(ctx *gg.Context, c3d cubie3d) {
 	// There are nb of cubies between [-1,1], 2 units
 	vecScale := 2. / float64(c3d.CubeSize)
 
 	m1 := c3d.Point
-	m2 := GetTranslationMatrix(c3d.DirRight.ScalarMultiply(vecScale)).Product(m1)
-	m3 := GetTranslationMatrix(c3d.DirDown.ScalarMultiply(vecScale)).Product(m2)
-	m4 := GetTranslationMatrix(c3d.DirDown.ScalarMultiply(vecScale)).Product(m1)
+	m2 := getTranslationMatrix(c3d.DirRight.ScalarMultiply(vecScale)).Product(m1)
+	m3 := getTranslationMatrix(c3d.DirDown.ScalarMultiply(vecScale)).Product(m2)
+	m4 := getTranslationMatrix(c3d.DirDown.ScalarMultiply(vecScale)).Product(m1)
 
 	// Convert to drawing plan
 	defer func() {
@@ -224,16 +223,16 @@ func DrawCubie(ctx *gg.Context, c3d cubie3d) {
 			log.Println(r)
 		}
 	}()
-	m1 = ProjectPoint(m1)
-	m2 = ProjectPoint(m2)
-	m3 = ProjectPoint(m3)
-	m4 = ProjectPoint(m4)
-	p1 := ConvertToDrawingPlan(m1, ctx.Width(), ctx.Height())
-	p2 := ConvertToDrawingPlan(m2, ctx.Width(), ctx.Height())
-	p3 := ConvertToDrawingPlan(m3, ctx.Width(), ctx.Height())
-	p4 := ConvertToDrawingPlan(m4, ctx.Width(), ctx.Height())
+	m1 = projectPoint(m1)
+	m2 = projectPoint(m2)
+	m3 = projectPoint(m3)
+	m4 = projectPoint(m4)
+	p1 := convertToDrawingPlan(m1, ctx.Width(), ctx.Height())
+	p2 := convertToDrawingPlan(m2, ctx.Width(), ctx.Height())
+	p3 := convertToDrawingPlan(m3, ctx.Width(), ctx.Height())
+	p4 := convertToDrawingPlan(m4, ctx.Width(), ctx.Height())
 
-	ctx.SetLineWidth(GetLineWidth(c3d.CubeSize, ctx.Width()))
+	ctx.SetLineWidth(getLineWidth(c3d.CubeSize, ctx.Width()))
 	ctx.MoveTo(p1.At(0, 0), p1.At(1, 0))
 	ctx.LineTo(p2.At(0, 0), p2.At(1, 0))
 	ctx.LineTo(p3.At(0, 0), p3.At(1, 0))
@@ -245,34 +244,34 @@ func DrawCubie(ctx *gg.Context, c3d cubie3d) {
 	ctx.Stroke()
 }
 
-func DrawFace(ctx *gg.Context, c3ds []cubie3d) {
+func drawFace(ctx *gg.Context, c3ds []cubie3d) {
 	for _, c3d := range c3ds {
-		DrawCubie(ctx, c3d)
+		drawCubie(ctx, c3d)
 	}
 }
 
-func DrawAxes(ctx *gg.Context, width, radX, radY, radZ float64) *gg.Context {
+func drawAxes(ctx *gg.Context, width, radX, radY, radZ float64) *gg.Context {
 	// Origins' points
-	poX := compute.NewVector4(0, 0, 0, 1)
-	poY := compute.NewVector4(0, 0, 0, 1)
-	poZ := compute.NewVector4(0, 0, 0, 1)
+	poX := math3D.NewVector4(0, 0, 0, 1)
+	poY := math3D.NewVector4(0, 0, 0, 1)
+	poZ := math3D.NewVector4(0, 0, 0, 1)
 
 	// Real world coords axes
 	arrowScale := .045
-	rwAxisX := GetTranslationMatrix(compute.NewVector3(1, 0, 0)).Product(poX)
-	rwArrowX1 := GetTranslationMatrix(compute.NewVector3(-arrowScale, arrowScale, 0)).Product(rwAxisX)
-	rwArrowX2 := GetTranslationMatrix(compute.NewVector3(-arrowScale, -arrowScale, 0)).Product(rwAxisX)
+	rwAxisX := getTranslationMatrix(math3D.NewVector3(1, 0, 0)).Product(poX)
+	rwArrowX1 := getTranslationMatrix(math3D.NewVector3(-arrowScale, arrowScale, 0)).Product(rwAxisX)
+	rwArrowX2 := getTranslationMatrix(math3D.NewVector3(-arrowScale, -arrowScale, 0)).Product(rwAxisX)
 
-	rwAxisY := GetTranslationMatrix(compute.NewVector3(0, 1, 0)).Product(poY)
-	rwArrowY1 := GetTranslationMatrix(compute.NewVector3(-arrowScale, -arrowScale, 0)).Product(rwAxisY)
-	rwArrowY2 := GetTranslationMatrix(compute.NewVector3(arrowScale, -arrowScale, 0)).Product(rwAxisY)
+	rwAxisY := getTranslationMatrix(math3D.NewVector3(0, 1, 0)).Product(poY)
+	rwArrowY1 := getTranslationMatrix(math3D.NewVector3(-arrowScale, -arrowScale, 0)).Product(rwAxisY)
+	rwArrowY2 := getTranslationMatrix(math3D.NewVector3(arrowScale, -arrowScale, 0)).Product(rwAxisY)
 
-	rwAxisZ := GetTranslationMatrix(compute.NewVector3(0, 0, 1)).Product(poZ)
-	rwArrowZ1 := GetTranslationMatrix(compute.NewVector3(-arrowScale, 0, -arrowScale)).Product(rwAxisZ)
-	rwArrowZ2 := GetTranslationMatrix(compute.NewVector3(arrowScale, 0, -arrowScale)).Product(rwAxisZ)
+	rwAxisZ := getTranslationMatrix(math3D.NewVector3(0, 0, 1)).Product(poZ)
+	rwArrowZ1 := getTranslationMatrix(math3D.NewVector3(-arrowScale, 0, -arrowScale)).Product(rwAxisZ)
+	rwArrowZ2 := getTranslationMatrix(math3D.NewVector3(arrowScale, 0, -arrowScale)).Product(rwAxisZ)
 
 	// Rotations
-	rotMat := GetRotationMatrixXYZ(radX, radY, radZ)
+	rotMat := getRotationMatrixXYZ(radX, radY, radZ)
 
 	rwAxisX = rotMat.Product(rwAxisX)
 	rwArrowX1 = rotMat.Product(rwArrowX1)
@@ -292,22 +291,22 @@ func DrawAxes(ctx *gg.Context, width, radX, radY, radZ float64) *gg.Context {
 			log.Println(r)
 		}
 	}()
-	scaleMat := GetScaleMatrix(width, width, width)
-	aX := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwAxisX)), ctx.Width(), ctx.Height())
-	arrX1 := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwArrowX1)), ctx.Width(), ctx.Height())
-	arrX2 := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwArrowX2)), ctx.Width(), ctx.Height())
+	scaleMat := getScaleMatrix(width, width, width)
+	aX := convertToDrawingPlan(projectPoint(scaleMat.Product(rwAxisX)), ctx.Width(), ctx.Height())
+	arrX1 := convertToDrawingPlan(projectPoint(scaleMat.Product(rwArrowX1)), ctx.Width(), ctx.Height())
+	arrX2 := convertToDrawingPlan(projectPoint(scaleMat.Product(rwArrowX2)), ctx.Width(), ctx.Height())
 
-	aY := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwAxisY)), ctx.Width(), ctx.Height())
-	arrY1 := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwArrowY1)), ctx.Width(), ctx.Height())
-	arrY2 := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwArrowY2)), ctx.Width(), ctx.Height())
+	aY := convertToDrawingPlan(projectPoint(scaleMat.Product(rwAxisY)), ctx.Width(), ctx.Height())
+	arrY1 := convertToDrawingPlan(projectPoint(scaleMat.Product(rwArrowY1)), ctx.Width(), ctx.Height())
+	arrY2 := convertToDrawingPlan(projectPoint(scaleMat.Product(rwArrowY2)), ctx.Width(), ctx.Height())
 
-	aZ := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwAxisZ)), ctx.Width(), ctx.Height())
-	arrZ1 := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwArrowZ1)), ctx.Width(), ctx.Height())
-	arrZ2 := ConvertToDrawingPlan(ProjectPoint(scaleMat.Product(rwArrowZ2)), ctx.Width(), ctx.Height())
+	aZ := convertToDrawingPlan(projectPoint(scaleMat.Product(rwAxisZ)), ctx.Width(), ctx.Height())
+	arrZ1 := convertToDrawingPlan(projectPoint(scaleMat.Product(rwArrowZ1)), ctx.Width(), ctx.Height())
+	arrZ2 := convertToDrawingPlan(projectPoint(scaleMat.Product(rwArrowZ2)), ctx.Width(), ctx.Height())
 
-	origX := ConvertToDrawingPlan(ProjectPoint(poX), ctx.Width(), ctx.Height())
-	origY := ConvertToDrawingPlan(ProjectPoint(poY), ctx.Width(), ctx.Height())
-	origZ := ConvertToDrawingPlan(ProjectPoint(poZ), ctx.Width(), ctx.Height())
+	origX := convertToDrawingPlan(projectPoint(poX), ctx.Width(), ctx.Height())
+	origY := convertToDrawingPlan(projectPoint(poY), ctx.Width(), ctx.Height())
+	origZ := convertToDrawingPlan(projectPoint(poZ), ctx.Width(), ctx.Height())
 
 	// Draw axes
 	ctx.SetLineWidth(5)
@@ -337,8 +336,8 @@ func DrawAxes(ctx *gg.Context, width, radX, radY, radZ float64) *gg.Context {
 // angleOfView = FOV in degrees
 // n = near clipping plane
 // f = far clipping plane
-func GetProjectionMatrix(angleOfView, n, f float64) *compute.Matrix {
-	ret := new(compute.Matrix)
+func getProjectionMatrix(angleOfView, n, f float64) *math3D.Matrix {
+	ret := new(math3D.Matrix)
 	radFov := getRad(angleOfView)
 	aspect := 1.
 
@@ -354,7 +353,7 @@ func GetProjectionMatrix(angleOfView, n, f float64) *compute.Matrix {
 // Multiply a 4D vector by a 4x4 matrix
 // and divide by w (perspective occurs here) and w != 1
 // returns a vector 4D
-func MultPointMatrix(m *compute.Matrix, v *compute.Matrix) *compute.Matrix {
+func multPointMatrix(m *math3D.Matrix, v *math3D.Matrix) *math3D.Matrix {
 	ret := m.Product(v)
 
 	w := ret.At(3, 0)
@@ -369,17 +368,17 @@ func MultPointMatrix(m *compute.Matrix, v *compute.Matrix) *compute.Matrix {
 }
 
 // Get translation matrix for camera "the eye"
-func GetCameraTranslation(x, y, z float64) *compute.Matrix {
-	return GetTranslationMatrix(compute.NewVector3(x, y, z))
+func getCameraTranslation(x, y, z float64) *math3D.Matrix {
+	return getTranslationMatrix(math3D.NewVector3(x, y, z))
 }
 
 // Project a point on the plan using perspective projection
 // p, the point must be a 4D vector
 // Returns a 4D vector point. Only x and y are useful ;-)
-func ProjectPoint(p *compute.Matrix) *compute.Matrix {
+func projectPoint(p *math3D.Matrix) *math3D.Matrix {
 	// ret = cam x Mproj x p
-	ret := MultPointMatrix(Cam, p)
-	ret = MultPointMatrix(Mproj, ret)
+	ret := multPointMatrix(Cam, p)
+	ret = multPointMatrix(Mproj, ret)
 
 	// x and y must be in [-1,1] to be rendered
 	x := ret.At(0, 0)
@@ -391,7 +390,7 @@ func ProjectPoint(p *compute.Matrix) *compute.Matrix {
 	}
 }
 
-func DrawCube(ctx *gg.Context, cube *data.Cube) *gg.Context {
+func drawCube3d(ctx *gg.Context, cube *Cube) *gg.Context {
 	var face3dMatrices []cubie3d
 
 	radX := getRad(34)
@@ -399,11 +398,11 @@ func DrawCube(ctx *gg.Context, cube *data.Cube) *gg.Context {
 	radZ := 0.
 
 	face3dMatrices = buildFace3d(cube, "white", radX, radY, radZ)
-	DrawFace(ctx, face3dMatrices)
+	drawFace(ctx, face3dMatrices)
 	face3dMatrices = buildFace3d(cube, "red", radX, radY, radZ)
-	DrawFace(ctx, face3dMatrices)
+	drawFace(ctx, face3dMatrices)
 	face3dMatrices = buildFace3d(cube, "green", radX, radY, radZ)
-	DrawFace(ctx, face3dMatrices)
+	drawFace(ctx, face3dMatrices)
 
 	//DrawAxes(ctx, 4, radX, radY, radZ)
 

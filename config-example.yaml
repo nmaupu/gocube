@@ -71,7 +71,7 @@ draw:
         algs:
           - r U R' U' L' U l F'
           - (U2) l' U' L U R U' r' F
-  - view: top
+  - view: 3d
     colors:
       - yellow
     preAlg: z2
