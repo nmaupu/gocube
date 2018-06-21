@@ -30,6 +30,7 @@ func Process(appName, appDesc, appVersion string) {
 	app.Command("scramble", "Scramble with the given algorithm", scramble)
 	app.Command("reverse", "Reverse the given algorithm", reverse)
 	app.Command("generate", "Generate algs", generate)
+	app.Command("exportImg", "Generates a cube image", exportImg)
 	app.Command("exportPDF", "Export as a PDF", exportPDF)
 
 	app.Action = func() {

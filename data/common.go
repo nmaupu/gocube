@@ -46,6 +46,22 @@ func GetColors(cols ...string) map[string]Color {
 	return c
 }
 
+// Get colors properties given parameters
+// All colors in the parameter slice will be excluded (gray out)
+func GetColorsExclude(cols ...string) map[string]Color {
+	c := make(map[string]Color, len(Colors))
+	for k, v := range Colors {
+		c[k] = v
+		if inSlice(cols, k) {
+			val := c[k]
+			val.HexColor = Gray
+			c[k] = val
+		}
+	}
+
+	return c
+}
+
 func inSlice(slice []string, elt string) bool {
 	for _, v := range slice {
 		if v == elt {

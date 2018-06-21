@@ -32,8 +32,10 @@ const (
 )
 
 var (
-	Mproj = getProjectionMatrix(AngleOfView, Near, Far)
-	Cam   = getCameraTranslation(CamX, CamY, CamZ)
+	rotRadX = getRad(30)
+	rotRadY = -getRad(35)
+	Mproj   = getProjectionMatrix(AngleOfView, Near, Far)
+	Cam     = getCameraTranslation(CamX, CamY, CamZ)
 )
 
 type cubie3d struct {
@@ -393,8 +395,8 @@ func projectPoint(p *math3D.Matrix) *math3D.Matrix {
 func drawCube3d(ctx *gg.Context, cube *Cube) *gg.Context {
 	var face3dMatrices []cubie3d
 
-	radX := getRad(34)
-	radY := -getRad(45)
+	radX := rotRadX
+	radY := rotRadY
 	radZ := 0.
 
 	face3dMatrices = buildFace3d(cube, "white", radX, radY, radZ)

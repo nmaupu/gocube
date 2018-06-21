@@ -2,6 +2,7 @@ package data
 
 import (
 	"bytes"
+	"errors"
 	"github.com/fogleman/gg"
 	"strings"
 )
@@ -176,6 +177,46 @@ func (c Cube) String() string {
 
 func (c *Cube) GetMargin() float64 {
 	return float64(c.CubeSize) * c.CubieSize * 2 / 100
+}
+
+// Set colors so that everything is gray except centers
+// and corners' pieces
+// Only relevant for 3d view
+func (c *Cube) F2lColorMode() error {
+	if c.CubeSize != 3 {
+		return errors.New("F2lColorMode is only available for 3x3 cubes")
+	}
+
+	for k, f := range c.Faces {
+		//color, _ := f.GetCenterColor()
+
+		switch k {
+		case "white":
+			// Make all colors gray
+			for i := 0; i < c.CubeSize; i++ {
+				for j := 0; j < c.CubeSize; j++ {
+					if i != 1 || j != 1 {
+						f.Colors[i][j].HexColor = Gray
+					}
+				}
+			}
+		case "green", "blue", "orange", "red":
+			colToKeep := 2
+			if k == "green" || k == "blue" {
+				colToKeep = 0
+			}
+			for i := 0; i < c.CubeSize; i++ {
+				for j := 0; j < c.CubeSize; j++ {
+					if j == colToKeep || i == 0 {
+						f.Colors[i][j].HexColor = Gray
+					}
+				}
+			}
+
+		}
+	}
+
+	return nil
 }
 
 func (c *Cube) Draw() *gg.Context {
