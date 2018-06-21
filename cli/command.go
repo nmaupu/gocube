@@ -9,20 +9,22 @@ import (
 	"os"
 )
 
+const (
+	cubieSize = 60
+)
+
 var (
-	size      *int
-	cubieSize *int
-	debug     *bool
+	size  *int
+	debug *bool
 )
 
 func Process(appName, appDesc, appVersion string) {
 	app := cli.App(appName, appDesc)
-	app.Spec = "[-d] [-s] [-c]"
+	app.Spec = "[-d] [-s]"
 
 	app.Version("v version", fmt.Sprintf("%s version %s", appName, appVersion))
 
 	size = app.IntOpt("s size", 3, "Size of the cube")
-	cubieSize = app.IntOpt("c cubie", 30, "Size of one cubie when rendered (px)")
 	debug = app.BoolOpt("d debug", false, "Enable debug mode")
 
 	app.Command("scramble", "Scramble with the given algorithm", scramble)
@@ -31,7 +33,7 @@ func Process(appName, appDesc, appVersion string) {
 	app.Command("exportPDF", "Export as a PDF", exportPDF)
 
 	app.Action = func() {
-		c := data.NewCube(*size, float64(*cubieSize))
+		c := data.NewCube(*size, float64(cubieSize))
 		data.SetDebug(*debug)
 		fmt.Println(c)
 	}
@@ -43,7 +45,7 @@ func scramble(cmd *cli.Cmd) {
 	alg := cmd.StringOpt("a alg", "", "Algorithm to use for scrambling")
 
 	cmd.Action = func() {
-		c := data.NewCube(*size, float64(*cubieSize))
+		c := data.NewCube(*size, float64(cubieSize))
 		data.SetDebug(*debug)
 
 		c.Execute(data.NewAlg(*alg))
@@ -72,7 +74,7 @@ func generate(cmd *cli.Cmd) {
 			alg := g.GenerateAlg(*length)
 			fmt.Println(alg)
 			if *display {
-				c := data.NewCube(*size, float64(*cubieSize))
+				c := data.NewCube(*size, float64(cubieSize))
 				c.Execute(alg)
 				fmt.Print(c)
 			}
@@ -85,7 +87,7 @@ func test3D(cmd *cli.Cmd) {
 	output := cmd.StringOpt("o output", "/tmp/out.png", "Output file name")
 
 	cmd.Action = func() {
-		c := data.NewCube(*size, float64(*cubieSize))
+		c := data.NewCube(*size, float64(cubieSize))
 		//g := compute.NewGenerator()
 		//alg := g.GenerateAlg(20)
 		//fmt.Println(alg)

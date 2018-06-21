@@ -72,6 +72,16 @@ func (c *Cube) init() {
 	c.moves["M2"] = c.M2
 	c.moves["S2"] = c.S2
 	c.moves["E2"] = c.E2
+	// Double moves ' - needed for fingertricks insights only
+	c.moves["R2'"] = c.R2
+	c.moves["L2'"] = c.L2
+	c.moves["F2'"] = c.F2
+	c.moves["B2'"] = c.B2
+	c.moves["D2'"] = c.D2
+	c.moves["U2'"] = c.U2
+	c.moves["M2'"] = c.M2
+	c.moves["S2'"] = c.S2
+	c.moves["E2'"] = c.E2
 
 	// Rotation moves
 	c.moves["x"] = c.X
@@ -83,35 +93,47 @@ func (c *Cube) init() {
 	c.moves["x2"] = c.X2
 	c.moves["y2"] = c.Y2
 	c.moves["z2"] = c.Z2
+	c.moves["x2'"] = c.X2
+	c.moves["y2'"] = c.Y2
+	c.moves["z2'"] = c.Z2
 
 	// Wide moves
 	c.moves["r"] = c.Rw
 	c.moves["r'"] = c.Rwp
 	c.moves["r2"] = c.Rw2
+	c.moves["r2'"] = c.Rw2
 	c.moves["l"] = c.Lw
 	c.moves["l'"] = c.Lwp
 	c.moves["l2"] = c.Lw2
+	c.moves["l2'"] = c.Lw2
 	c.moves["d"] = c.Dw
 	c.moves["d'"] = c.Dwp
 	c.moves["d2"] = c.Dw2
+	c.moves["d2'"] = c.Dw2
 	c.moves["u"] = c.Uw
 	c.moves["u'"] = c.Uwp
 	c.moves["u2"] = c.Uw2
+	c.moves["u2'"] = c.Uw2
 	c.moves["b"] = c.Bw
 	c.moves["b'"] = c.Bwp
 	c.moves["b2"] = c.Bw2
+	c.moves["b2'"] = c.Bw2
 	c.moves["f"] = c.Fw
 	c.moves["f'"] = c.Fwp
 	c.moves["f2"] = c.Fw2
+	c.moves["f2'"] = c.Fw2
 	c.moves["m"] = c.Mw
 	c.moves["m'"] = c.Mwp
 	c.moves["m2"] = c.Mw2
+	c.moves["m2'"] = c.Mw2
 	c.moves["s"] = c.Sw
 	c.moves["s'"] = c.Swp
 	c.moves["s2"] = c.Sw2
+	c.moves["s2'"] = c.Sw2
 	c.moves["e"] = c.Ew
 	c.moves["e'"] = c.Ewp
 	c.moves["e2"] = c.Ew2
+	c.moves["e2'"] = c.Ew2
 }
 
 func (c Cube) String() string {

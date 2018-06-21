@@ -43,13 +43,13 @@ func TestNewAlg(t *testing.T) {
 
 func TestAddMoves(t *testing.T) {
 	a := Alg{}
-	myAlg := "R U R' U'"
+	myAlg := "(R U R' U')(L B L' B')"
 	a.AddMoves(myAlg)
-	if len(a.Moves) != 4 {
-		t.Fatalf("Moves slice length is incorrect, expected: 4, got: %d", len(a.Moves))
+	if len(a.Moves) != 8 {
+		t.Fatalf("Moves slice length is incorrect, expected: 8, got: %d", len(a.Moves))
 	}
 
-	expected := myAlg
+	expected := "R U R' U' L B L' B'"
 	got := a.String()
 	if expected != got {
 		t.Fatalf("Moves slice is incorrect, expected: %s, got: %s", expected, got)
@@ -79,6 +79,7 @@ func TestReverseMove(t *testing.T) {
 		{"R", "R'"},
 		{"R'", "R"},
 		{"R2", "R2"},
+		{"r2'", "r2'"},
 	}
 
 	for _, table := range tables {
@@ -100,5 +101,13 @@ func TestReverse(t *testing.T) {
 
 	if r.String() != "R2 U R U' R'" {
 		t.Errorf("Incorrect reverse, expected: R2 U R U' R', got: %s", r)
+	}
+
+	// Second test
+	a = NewAlg("r' U (r2 U' r2' U' r2) U r'")
+	r = a.Copy().Reverse()
+	expected := "r U' r2 U r2' U r2 U' r"
+	if r.String() != expected {
+		t.Errorf("Incorrect reverse, expected: %s, got: %s", expected, r)
 	}
 }

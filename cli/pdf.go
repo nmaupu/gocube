@@ -95,7 +95,7 @@ func exportPDF(cmd *cli.Cmd) {
 
 			var mx, my float64
 			for kSpec, v := range draw.Spec {
-				c := data.NewCubeColors(conf.Cube.Size, float64(*cubieSize), colors)
+				c := data.NewCubeColors(conf.Cube.Size, float64(cubieSize), colors)
 				setupAlg := data.NewAlg(v.Algs[0]).Reverse()
 				c.Execute(preAlg)
 				c.Execute(setupAlg)
