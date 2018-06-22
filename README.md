@@ -8,6 +8,10 @@
 - generate PNG image given many parameters
 - generate PDF with all your favorites algs
 
+# Installation
+
+Download a release, unzip and you are good to go !
+
 # How to use it ?
 
 ## Command line help
@@ -91,10 +95,10 @@ $ ./gocube exportPDF -f config-example -o /tmp/test.pdf
 
 # PDF config file description
 
-Several format are supported: JSON, TOML, YAML, HCL, and Java properties
+Several formats are supported: JSON, TOML, YAML, HCL, and Java properties
 I'm gonna describe YAML file as it is the simplest to use.
 
-Three main section:
+Three main sections:
 - cube: cube description
 - pdf: pdf description
 - draw: what to draw on the PDF
@@ -176,4 +180,11 @@ Here are the 4 commands used to generate the images seen on the top of the READM
 ./gocube exportImg -w 150 -t top -p z2 -a "M U R U R' U' M2 U R U' r'" -o /tmp/title2.png -i yellow
 ./gocube exportImg -w 150 -t f2l -p z2 -a "R U R' U'" -o /tmp/title3.png
 ./gocube exportImg -w 150 -t 3d -p z2 -a "M2 E2 S2" -o /tmp/title4.png
+```
+
+# Building
+
+```
+make deps
+make
 ```
