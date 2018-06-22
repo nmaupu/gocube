@@ -6,6 +6,7 @@ import (
 	"github.com/nmaupu/gocube/compute"
 	"github.com/nmaupu/gocube/data"
 	"github.com/nmaupu/gocube/image"
+	"log"
 	"os"
 )
 
@@ -34,15 +35,14 @@ func Process(appName, appDesc, appVersion string) {
 	app.Command("exportPDF", "Export as a PDF", exportPDF)
 
 	app.Action = func() {
-		c := data.NewCube(*size, float64(cubieSize))
-		data.SetDebug(*debug)
-		fmt.Println(c)
+		log.Fatal("Please choose a command arg !")
 	}
 
 	app.Run(os.Args)
 }
 
 func scramble(cmd *cli.Cmd) {
+	cmd.Spec = "-a"
 	alg := cmd.StringOpt("a alg", "", "Algorithm to use for scrambling")
 
 	cmd.Action = func() {

@@ -1,6 +1,8 @@
 hash: dcfcf29fd8b418032b0cf47ab6547a52b69b5ab260ca0672f64701c2b2d57c3c
-updated: 2018-06-19T00:26:30.648959+02:00
+updated: 2018-06-22T01:07:05.12798+02:00
 imports:
+- name: github.com/disintegration/imaging
+  version: 5e63c9a565d0a3260d23d060a795783dab90fefe
 - name: github.com/fogleman/gg
   version: 6166aa3c1afaee416f384645a81636267aee6d25
 - name: github.com/fsnotify/fsnotify
@@ -36,13 +38,6 @@ imports:
   version: c2353362d570a7bfa228149c62842019201cfb71
 - name: github.com/mitchellh/mapstructure
   version: bb74f1db0675b241733089d5a1faa5dd8b0ef57b
-- name: github.com/muesli/smartcrop
-  version: f6ebaa786a12a0fdb2d7c6dee72808e68c296464
-  subpackages:
-  - nfnt
-  - options
-- name: github.com/nfnt/resize
-  version: 83c6a9932646f83e3267f353373d47347b6036b2
 - name: github.com/pelletier/go-toml
   version: c01d1270ff3e442a8a57cddc1c92dc1138598194
 - name: github.com/signintech/gopdf
@@ -64,11 +59,12 @@ imports:
 - name: golang.org/x/image
   version: af66defab954cb421ca110193eed9477c8541e2a
   subpackages:
-  - draw
+  - bmp
   - font
   - font/basicfont
-  - math/f64
   - math/fixed
+  - tiff
+  - tiff/lzw
 - name: golang.org/x/sys
   version: 7c1e4f34a39c8bf93b6a3379e4ffb3b118ecc614
   subpackages:
