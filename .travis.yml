@@ -24,13 +24,22 @@ before_deploy:
 - GOOS=darwin  GOARCH=amd64 go build -o bin_release/gocube_darwin-amd64  -ldflags="-X main.AppVersion=$TRAVIS_TAG"
 - GOOS=windows GOARCH=386   go build -o bin_release/gocube_win-i386.exe  -ldflags="-X main.AppVersion=$TRAVIS_TAG"
 - GOOS=windows GOARCH=amd64 go build -o bin_release/gocube_win-amd64.exe -ldflags="-X main.AppVersion=$TRAVIS_TAG"
+- mkdir -p archives
+- mkdir bin_release/gocube-win-i386-$TRAVIS_TAG && cp -a ttf/ bin_release/gocube_win-i386.exe bin_release/gocube-win-i386-$TRAVIS_TAG
+- mkdir bin_release/gocube-win-amd64-$TRAVIS_TAG && cp -a ttf/ bin_release/gocube_win-amd64.exe bin_release/gocube-win-amd64-$TRAVIS_TAG
+- mkdir bin_release/gocube-linux-amd64-$TRAVIS_TAG && cp -a ttf/ bin_release/gocube_linux-amd64 bin_release/gocube-linux-amd64-$TRAVIS_TAG
+- mkdir bin_release/gocube-darwin-amd64-$TRAVIS_TAG && cp -a ttf/ bin_release/gocube_darwin-amd64 bin_release/gocube-darwin-amd64-$TRAVIS_TAG
+- cd bin_release && zip -r ../archives/gocube-win-i386-${TRAVIS_TAG}.zip gocube-win-i386-${TRAVIS_TAG} && cd -
+- cd bin_release && zip -r ../archives/gocube-win-amd64-${TRAVIS_TAG}.zip gocube-win-amd64-${TRAVIS_TAG} && cd -
+- cd bin_release && zip -r ../archives/gocube-linux-amd64-${TRAVIS_TAG}.zip gocube-linux-amd64-${TRAVIS_TAG} && cd -
+- cd bin_release && zip -r ../archives/gocube-darwin-amd64-${TRAVIS_TAG}.zip gocube-darwin-amd64-${TRAVIS_TAG} && cd -
 
 deploy:
   provider: releases
   api_key:
     secure: iu/qI3stGeAOCqiYsS5zso7kmYTV2whDgRLDEYCPFdERODvN6xu8TGLGCrvE0Ot/+exYNebKmLlHKydEoi9tumelXbt8pvNe7wkOxSuGfiCfLOMqIvnEuklRKVWTTHEbrbnNgZIKPjCZM7baGKje2sDu66pvQPNVo3CoLt+a9CwOPnycKuRV/dS6r/VVG/QvxyQhSoZIM4fPQxymf1/t2J1u7h32hjW+qFxV6aZiy1T+gMc05wjSxeG/PI3MlHxeLldM0N301DsXzNOofH9kKo9R0Q/EIbEPDDAZcn02fSnozL0qSr9gMz3tm4Hs0M2A+AcWNq5d4HopsOf44zv8WIuInDmFGU1k1tPoGL3AonXAZ/9PhPbk9pg7EITVHj3DUHiSUjLs7yRT8JiNaYucFQKDU1PkowpoiAkaBv0JsMreTuhb5vNagLme1RqCJElzjOGiFkpAG054mdi/jzXqse2r57OTIacj3Fo4YASu288ivkc18BU5czj2WbcPRbpStx80G8pQ0KN+u5UVj5yX4QvEgvR3hDvC/uQmNYW3cBYsksXl2kl//b/nFRRcEuVnqWmiATdIQGU7Igx0t2JgT97OL8wxBWK9LNZ689D07DQVe2dafVZbReStodEf+SIOZETUjbOQDRwGhOk8zqxEoU4PeWwV14vQBHFqfVbWn78=
   file_glob: true
-  file: bin_release/*
+  file: archives/*
   skip_cleanup: true
   on:
     tags: true
