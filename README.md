@@ -2,15 +2,17 @@
 
 # What is *gocube*
 
-*gocube* is a program to play with the Rubik's Cube ! It is able to:
+*gocube* is a **command line tool** to play with the Rubik's Cube ! It is able to:
 - display a cube as ASCII, png (full view, top view, colors filtering, 3d)
 - scramble the cube with a given algorithm
 - generate PNG image given many parameters
 - generate PDF with all your favorites algs
 
+It's available for Windows, Mac OS or Linux based OSes.
+
 # Installation
 
-Download a release, unzip and you are good to go !
+**[Download a release](https://github.com/nmaupu/gocube/releases "Gocube releases")**, unzip and you are good to go !
 
 # How to use it ?
 
