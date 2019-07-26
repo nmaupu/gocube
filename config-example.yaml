@@ -17,16 +17,16 @@ draw:
           - (R U2 R' U') (R U R' U') (R U' R')
       - name: OLL 22
         algs:
-          - R U2 (R2 U' R2 U' R2) U2 R
+          - (R U2) (R2 U') (R2 U') (R2 U2 R)
       - name: OLL 23
         algs:
-          - R2 D' (R U2 R') D (R U2 R)
+          - (R2 D) (R' U2) (R D') (R' U2 R')
       - name: OLL 24
         algs:
           - (r U R' U') (r' F R F')
       - name: OLL 25
         algs:
-          - F' (r U R' U') r' F R
+          - (F R' F' r U) (R U' r')
       - name: OLL 26 - antisune
         algs:
           - R U2 R' U' R U' R'
@@ -54,7 +54,7 @@ draw:
       - name: OLL 36
         algs:
           - (L' U' L U') (L' U L U) (L F' L' F)
-      - name: OLL 38
+      - name: OLL 38 - W shape
         algs:
           - (R U R' U) (R U' R' U') (R' F R F')
       - name: OLL 5 - Left Fat antisune
@@ -65,13 +65,14 @@ draw:
           - r U2 R' U' R U' r'
       - name: OLL 31
         algs:
-          - R' U' F (U R U' R') F' R
+          - (R' U') F (U R U' R') F' R
       - name: OLL 32
         algs:
           - L U F' (U' L' U L) F L'
+          - (R U B') U' R' U (R B R')
       - name: OLL 43
         algs:
-          - F' (U' L' U L) F
+          - R' (U' F' U F) R
       - name: OLL 44
         algs:
           - F (U R U' R') F'
@@ -86,16 +87,18 @@ draw:
           - (R U R' U') R' F (R2 U R' U') F'
       - name: OLL 10
         algs:
-          - R U R' U (R' F R F') R U2 R'
+          - (R U R' U) (R' F R F') (R U2 R')
       - name: OLL 35
         algs:
-          - R U2 (R2' F R F') R U2 R'
+          - R U2 (R2' F) (R F' R U2 R')
       - name: OLL 37
         algs:
           - (F R' F' R) (U R U' R')
+          - F (R U') (R' U' R U) (R' F')
       - name: OLL 34
         algs:
           - (R U R2 U') R' F R U R U' F'
+          - (R U R' U') y' (r' U' R U M')
       - name: OLL 46
         algs:
           - R' U' (R' F R F') U R
@@ -114,9 +117,10 @@ draw:
       - name: OLL 11
         algs:
           - (r U R' U) (R' F R F') (R U2 r')
+          - M (R U R' U R U2 R') U M'
       - name: OLL 12
         algs:
-          - M' (R' U' R U' R' U2 R) U' R r'
+          - M' (R' U' R U' R' U2 R) U' M
       - name: OLL 39
         algs:
           - L F' (L' U' L U) F U' L'
@@ -132,21 +136,24 @@ draw:
       - name: OLL 47
         algs:
           - R' U' (R' F R F' R' F R F') U R
+          - F' (L' U' L U) (L' U' L U) F
       - name: OLL 48
         algs:
           - F (R U R' U') (R U R' U') F'
       - name: OLL 49
         algs:
-          - r U' (r2 U r2 U r2) U' r
+          - (r U') (r2 U r2 U) (r2 U' r)
       - name: OLL 50
         algs:
           - r' U (r2 U' r2' U' r2) U r'
+          - (R' F) (R2 B' R2 F') (R2 B R')
       - name: OLL 53
         algs:
           - (l' U2 L U) (L' U' L U) L' U l
+          - (l' U' L U') (L' U L U') (L' U2 l)
       - name: OLL 54
         algs:
-          - (r U2 R' U')(R U R' U') R U' r'
+          - r U2 (R' U'R U) (R' U' R U') r'
   - view: top
     colors:
       - yellow
@@ -173,7 +180,7 @@ draw:
           - (R U R' U) R U' (B U' B') R'
       - name: OLL 55
         algs:
-          - R' F R U R U' R2 F' (R2 U' R' U R U R')
+          - (R' F R) U (R U' R2 F') (R2 U' R') U (R U R')
       - name: OLL 56
         algs:
           - r' U' r (U' R' U R) (U' R' U R) r' U r
@@ -186,9 +193,10 @@ draw:
       - name: OLL 29
         algs:
           - (R U R' U') (R U' R') (F' U' F) (R U R')
+          - r2 D' (r U r') D r2 U' (r' U' r)
       - name: OLL 30
         algs:
-          - F (R' F R2 U' R' U') (R U R') F2
+          - (F R' F) (R2 U' R' U') (R U R') F2
       - name: OLL 41
         algs:
           - (R U R' U R U2' R') (F R U R' U' F')
@@ -208,20 +216,21 @@ draw:
           - R U2 (R2' F R F') U2 (R' F R F')
       - name: OLL 2
         algs:
-          - r U r' U2 r U2 R' U2 R U' r'
+          - (r U r') (U2 R U2 R' U2) (r U' r')
           - U' (F R U R' U') (S R U R' U') f'
       - name: OLL 3
         algs:
-          - r' (R2 U R' U r U2 r') U M'
+          - f (R U R' U') f' U' F (R U R' U') F'
       - name: OLL 4
         algs:
-          - M U' (r U2 r' U' R U' R') M'
+          - f (R U R' U') f' U F (R U R' U') F'
       - name: OLL 17
         algs:
-          - F R' F' R2 r' (U R U' R') U' M'
+          - (R U R' U) (R' F R F') U2 (R' F R F')
       - name: OLL 18
         algs:
           - (r U R' U R U2 r') (r' U' R U' R' U2 r)
+          - (R U2) (R2 F R F') U2 (M' U R U' r')
       - name: OLL 19
         algs:
           - r' R U (R U R' U') M' (R' F R F')
